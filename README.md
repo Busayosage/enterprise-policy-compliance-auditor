@@ -71,6 +71,14 @@ flowchart TD
 
 This test shows that when the uploaded policy does not contain enough evidence, the app refuses to invent an answer.
 
+## Demo Video
+
+A short demo video is included in this repository:
+
+[Watch the demo video](demo/enterprise_policy_compliance_demo.mp4)
+
+The video shows the Streamlit app answering policy questions with source snippets and refusing to answer when the uploaded policy does not contain enough evidence.
+
 ## Example Questions
 
 - "What does the policy say about conflicts of interest?"
