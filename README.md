@@ -49,6 +49,28 @@ User asks question
   → Answer + source snippets displayed in Streamlit
 ```
 
+## Screenshots / Demo
+
+### 1. App Homepage
+![App Homepage](screenshots/01_app_homepage.png)
+
+### 2. PDF Uploaded and Ready to Index
+![PDF Uploaded](screenshots/02_pdf_uploaded_ready_to_index.png)
+
+### 3. PDF Indexed Successfully
+![PDF Indexed](screenshots/03_pdf_indexed_successfully.png)
+
+### 4. Gifts and Hospitality Answer with Source Snippets
+![Gifts and Hospitality Answer](screenshots/04_gifts_hospitality_answer_with_sources.png)
+
+### 5. Conflicts of Interest Answer
+![Conflicts of Interest Answer](screenshots/05_conflicts_of_interest_answer_fast.png)
+
+### 6. Hallucination Control / Refusal Test
+![Hallucination Refusal Test](screenshots/06_hallucination_refusal_test.png)
+
+This test shows that when the uploaded policy does not contain enough evidence, the app refuses to invent an answer.
+
 ## Example Questions
 
 - "What does the policy say about conflicts of interest?"
