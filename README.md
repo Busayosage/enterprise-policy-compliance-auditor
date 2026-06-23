@@ -139,6 +139,10 @@ You can obtain a free API key from [build.nvidia.com](https://build.nvidia.com).
 - Tested hallucination control by asking a question not covered by the uploaded policy.
 - Practised API key management, GitHub workflow, and README documentation.
 
+## CI/CD
+
+GitHub Actions is used for basic automated checks on every push and pull request to `main`. The workflow validates dependency installation, runs Python syntax checks on all core files, and verifies that required project files are present. The workflow does not run live NVIDIA API calls because API keys are kept private and are never committed to the repository. This supports safer version control and project maintainability.
+
 ## Future Improvements
 
 - Multi-document support for comparing policies side by side.
