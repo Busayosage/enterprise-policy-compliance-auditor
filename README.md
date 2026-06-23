@@ -31,6 +31,7 @@ This application uses retrieval-augmented generation to solve the problem. When 
 | Embeddings | Sentence Transformers (all-MiniLM-L6-v2) |
 | LLM | NVIDIA NIM (`meta/llama-3.1-70b-instruct`) |
 | PDF Parsing | PyPDF |
+| Audit Logging (optional) | Snowflake |
 | Environment Management | python-dotenv |
 | Version Control | Git / GitHub |
 
@@ -47,6 +48,9 @@ flowchart TD
     G --> H[Context sent to NVIDIA NIM model]
     H --> I[Grounded compliance answer generated]
     I --> J[Answer and source snippets displayed in Streamlit]
+    J --> K{Snowflake configured?}
+    K -- Yes --> L[Log query to Snowflake RAG_QUERY_LOGS]
+    K -- No --> M[Continue without logging]
 ```
 
 ## Screenshots / Demo
@@ -104,10 +108,18 @@ After running `copy .env.example .env`, open the `.env` file and add your NVIDIA
 
 ## Environment Variables
 
-This project requires one environment variable. Add it to your `.env` file:
+This project requires one environment variable. Snowflake variables are optional. Add them to your `.env` file:
 
 ```
 NVIDIA_API_KEY=your_nvidia_api_key_here
+
+SNOWFLAKE_ACCOUNT=your_snowflake_account
+SNOWFLAKE_USER=your_snowflake_user
+SNOWFLAKE_PASSWORD=your_snowflake_password
+SNOWFLAKE_WAREHOUSE=your_snowflake_warehouse
+SNOWFLAKE_DATABASE=your_snowflake_database
+SNOWFLAKE_SCHEMA=your_snowflake_schema
+SNOWFLAKE_ROLE=your_snowflake_role
 ```
 
 You can obtain a free API key from [build.nvidia.com](https://build.nvidia.com).
@@ -122,8 +134,19 @@ You can obtain a free API key from [build.nvidia.com](https://build.nvidia.com).
 - Source page numbering may depend on PDF metadata and loader behaviour.
 - The vector store is local (ChromaDB persisted to disk).
 - Re-indexing replaces the previous vector store; incremental additions are not yet supported.
-- No Snowflake or external logging integration yet.
+- Snowflake logging is optional and requires separate credentials.
 - Cloud deployment would require secure environment variable setup and possible persistence changes.
+
+## Snowflake Audit Logging
+
+Snowflake logging is an optional feature for governance and reporting. It does not replace ChromaDB, which remains the vector search engine. When Snowflake credentials are configured in `.env`, each query is logged to a `RAG_QUERY_LOGS` table with:
+
+- User question and AI answer
+- Source filenames and page numbers
+- Evidence found status
+- Model name and response time
+
+If Snowflake credentials are missing, the app runs normally with logging disabled. The sidebar shows whether logging is enabled or disabled. Real credentials must be stored in `.env` and never committed to GitHub.
 
 ## Deployment
 
