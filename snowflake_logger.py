@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+TABLE_FQN = "RAG_COMPLIANCE_DB.AUDIT_LOGS.RAG_QUERY_LOGS"
+
 SNOWFLAKE_KEYS = [
     "SNOWFLAKE_ACCOUNT",
     "SNOWFLAKE_USER",
@@ -31,14 +33,28 @@ def _get_connection():
         database=os.getenv("SNOWFLAKE_DATABASE"),
         schema=os.getenv("SNOWFLAKE_SCHEMA"),
         role=os.getenv("SNOWFLAKE_ROLE"),
+        autocommit=True,
     )
+
+
+def test_snowflake_connection():
+    try:
+        conn = _get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT CURRENT_TIMESTAMP()")
+        cur.close()
+        conn.close()
+        return True, "Snowflake connection successful."
+    except Exception as e:
+        return False, f"Snowflake connection failed: {e}"
 
 
 def create_logs_table_if_not_exists():
     try:
         conn = _get_connection()
-        conn.cursor().execute("""
-            CREATE TABLE IF NOT EXISTS RAG_QUERY_LOGS (
+        cur = conn.cursor()
+        cur.execute(f"""
+            CREATE TABLE IF NOT EXISTS {TABLE_FQN} (
                 LOG_ID STRING,
                 CREATED_AT TIMESTAMP_NTZ,
                 DOCUMENT_NAMES STRING,
@@ -51,6 +67,7 @@ def create_logs_table_if_not_exists():
                 RESPONSE_TIME_SECONDS FLOAT
             )
         """)
+        cur.close()
         conn.close()
         return True, "Logs table ready."
     except Exception as e:
@@ -69,9 +86,10 @@ def log_query_to_snowflake(
 ):
     try:
         conn = _get_connection()
-        conn.cursor().execute(
-            """
-            INSERT INTO RAG_QUERY_LOGS (
+        cur = conn.cursor()
+        cur.execute(
+            f"""
+            INSERT INTO {TABLE_FQN} (
                 LOG_ID, CREATED_AT, DOCUMENT_NAMES, USER_QUESTION, AI_ANSWER,
                 SOURCE_FILENAMES, SOURCE_PAGES, EVIDENCE_FOUND,
                 MODEL_NAME, RESPONSE_TIME_SECONDS
@@ -90,6 +108,7 @@ def log_query_to_snowflake(
                 response_time_seconds,
             ),
         )
+        cur.close()
         conn.close()
         return True, "Query logged to Snowflake."
     except Exception as e:

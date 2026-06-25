@@ -3,7 +3,11 @@ import streamlit as st
 from dotenv import load_dotenv
 from database import index_documents
 from main import ask_question, MODEL_NAME
-from snowflake_logger import is_snowflake_configured, log_query_to_snowflake
+from snowflake_logger import (
+    is_snowflake_configured,
+    create_logs_table_if_not_exists,
+    log_query_to_snowflake,
+)
 
 load_dotenv()
 
@@ -12,6 +16,12 @@ st.set_page_config(page_title="Enterprise Policy Compliance Auditor", layout="wi
 st.title("Enterprise Policy Compliance Auditor")
 
 snowflake_enabled = is_snowflake_configured()
+
+if snowflake_enabled and "snowflake_table_ready" not in st.session_state:
+    success, msg = create_logs_table_if_not_exists()
+    st.session_state["snowflake_table_ready"] = success
+    if not success:
+        st.session_state["snowflake_table_error"] = msg
 
 with st.sidebar:
     st.header("Configuration")
@@ -49,6 +59,7 @@ if uploaded_files:
         st.session_state.pop("sources", None)
         st.session_state.pop("last_question", None)
         st.session_state.pop("elapsed", None)
+        st.session_state.pop("log_status", None)
         st.session_state["indexed_filenames"] = [f.name for f in uploaded_files]
         with st.spinner("Processing and indexing PDFs..."):
             success, message, doc_count, chunk_count, filenames = index_documents(uploaded_files)
@@ -89,7 +100,7 @@ if user_question and user_question.strip():
                     )
                     doc_names = ", ".join(st.session_state.get("indexed_filenames", []))
                     evidence_found = len(sources) > 0 and "cannot find enough evidence" not in answer.lower()
-                    log_query_to_snowflake(
+                    log_ok, log_msg = log_query_to_snowflake(
                         document_names=doc_names,
                         user_question=user_question.strip(),
                         ai_answer=answer,
@@ -99,6 +110,10 @@ if user_question and user_question.strip():
                         model_name=MODEL_NAME,
                         response_time_seconds=elapsed,
                     )
+                    st.session_state["log_status"] = (log_ok, log_msg)
+                elif not snowflake_enabled:
+                    st.session_state["log_status"] = (None, "Snowflake logging skipped because credentials are not configured.")
+
             except ValueError as e:
                 st.error(str(e))
             except TimeoutError:
@@ -113,6 +128,16 @@ if st.session_state.get("answer"):
     elapsed = st.session_state.get("elapsed")
     if elapsed is not None:
         st.caption(f"Response generated in {elapsed:.1f} seconds.")
+
+    log_status = st.session_state.get("log_status")
+    if log_status:
+        log_ok, log_msg = log_status
+        if log_ok is True:
+            st.caption(f"Snowflake log saved successfully.")
+        elif log_ok is False:
+            st.warning(log_msg)
+        else:
+            st.caption(log_msg)
 
     sources = st.session_state.get("sources", [])
     if sources:
