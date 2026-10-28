@@ -1,0 +1,103 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 697 >>
+stream
+BT
+/F1 11 Tf
+50 780 Td
+14 TL
+(IT Security Policy v2.1) Tj T*
+() Tj T*
+(Section 1 ? Password Requirements) Tj T*
+(All employees must use passwords of at least 12 characters.) Tj T*
+(Passwords must include uppercase, lowercase, numbers and symbols.) Tj T*
+(Passwords must be changed every 90 days.) Tj T*
+(Sharing passwords is strictly prohibited and subject to immediate dismissal.) Tj T*
+() Tj T*
+(Section 2 ? Multi-Factor Authentication) Tj T*
+(MFA is mandatory for all remote access to corporate systems.) Tj T*
+(Approved MFA methods: hardware token, authenticator app, SMS \(last resort\).) Tj T*
+(Employees who lose their MFA device must report to IT Security within 1 hour.) Tj T*
+() Tj T*
+ET
+endstream
+endobj
+3 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >> /Parent 8 0 R
+endobj
+4 0 obj
+<< /Length 618 >>
+stream
+BT
+/F1 11 Tf
+50 780 Td
+14 TL
+(IT Security Policy v2.1 ? Page 2) Tj T*
+() Tj T*
+(Section 3 ? Acceptable Use) Tj T*
+(Corporate devices must not be used for personal cryptocurrency mining.) Tj T*
+(Installation of unauthorised software is prohibited.) Tj T*
+(All software must be approved by the IT Security team before installation.) Tj T*
+() Tj T*
+(Section 4 ? Incident Response) Tj T*
+(Security incidents must be reported to security@company.com within 2 hours.) Tj T*
+(The incident response team will acknowledge within 30 minutes.) Tj T*
+(All incidents are logged in the Security Incident Register.) Tj T*
+() Tj T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >> /Parent 8 0 R
+endobj
+6 0 obj
+<< /Length 585 >>
+stream
+BT
+/F1 11 Tf
+50 780 Td
+14 TL
+(IT Security Policy v2.1 ? Page 3) Tj T*
+() Tj T*
+(Section 5 ? Data Classification) Tj T*
+(Data is classified into four tiers: Public, Internal, Confidential, Restricted.) Tj T*
+(Restricted data must be encrypted at rest using AES-256.) Tj T*
+(Confidential data must not be sent via unencrypted email.) Tj T*
+() Tj T*
+(Section 6 ? Remote Work) Tj T*
+(Remote employees must connect via the approved corporate VPN.) Tj T*
+(Public Wi-Fi networks must not be used without VPN.) Tj T*
+(Screen lock must activate after 5 minutes of inactivity.) Tj T*
+() Tj T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 6 0 R >> /Parent 8 0 R
+endobj
+8 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 8 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000827 00000 n 
+0000000953 00000 n 
+0000001622 00000 n 
+0000001748 00000 n 
+0000002384 00000 n 
+0000002510 00000 n 
+0000002579 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+2628
+%%EOF

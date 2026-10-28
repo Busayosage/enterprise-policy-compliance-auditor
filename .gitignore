@@ -1,5 +1,7 @@
 .env
 venv/
+venv_test/
+venv_validate/
 __pycache__/
 chroma_db/
 temp/
