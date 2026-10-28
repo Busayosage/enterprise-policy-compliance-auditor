@@ -22,7 +22,7 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt pytest
 
       - name: Python syntax check
         run: python -m py_compile app.py main.py database.py snowflake_logger.py
@@ -36,3 +36,18 @@ jobs:
             fi
             echo "OK: $file"
           done
+
+      - name: Generate test PDF fixtures
+        run: python tests/fixtures/make_fixtures.py
+
+      - name: Run pytest suite
+        run: pytest tests/ -v --tb=short -x
+        env:
+          NVIDIA_API_KEY: ""
+          SNOWFLAKE_ACCOUNT: ""
+          SNOWFLAKE_USER: ""
+          SNOWFLAKE_PASSWORD: ""
+          SNOWFLAKE_WAREHOUSE: ""
+          SNOWFLAKE_DATABASE: ""
+          SNOWFLAKE_SCHEMA: ""
+          SNOWFLAKE_ROLE: ""
