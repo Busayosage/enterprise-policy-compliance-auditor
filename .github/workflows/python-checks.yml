@@ -25,7 +25,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Python syntax check
-        run: python -m py_compile app.py main.py database.py
+        run: python -m py_compile app.py main.py database.py snowflake_logger.py
 
       - name: Verify required files exist
         run: |
