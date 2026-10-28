@@ -1,0 +1,3 @@
+# Treat PDF files as binary to prevent CRLF line-ending conversion
+# corrupting the PDF byte structure on Windows checkouts.
+*.pdf binary

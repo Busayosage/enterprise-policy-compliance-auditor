@@ -95,8 +95,9 @@ if user_question and user_question.strip():
                     src_filenames = ", ".join(
                         doc.metadata.get("source_filename", "Unknown") for doc in sources
                     )
+                    # Display 1-indexed page numbers (PyPDF stores 0-indexed)
                     src_pages = ", ".join(
-                        str(doc.metadata.get("page", "unknown")) for doc in sources
+                        str(doc.metadata.get("page", 0) + 1) for doc in sources
                     )
                     doc_names = ", ".join(st.session_state.get("indexed_filenames", []))
                     evidence_found = len(sources) > 0 and "cannot find enough evidence" not in answer.lower()
@@ -144,7 +145,8 @@ if st.session_state.get("answer"):
         st.subheader("Source Snippets")
         for i, doc in enumerate(sources, 1):
             filename = doc.metadata.get("source_filename", "Unknown")
-            page = doc.metadata.get("page", None)
-            page_label = f"Page {page}" if page is not None else "Page unknown"
+            raw_page = doc.metadata.get("page", None)
+            # PyPDF stores 0-indexed pages; display as 1-indexed
+            page_label = f"Page {raw_page + 1}" if raw_page is not None else "Page unknown"
             with st.expander(f"Source {i} — {filename} — {page_label}"):
                 st.write(doc.page_content)

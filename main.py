@@ -8,9 +8,12 @@ from database import load_retriever
 load_dotenv()
 
 MODEL_NAME = "meta/llama-3.1-70b-instruct"
-# Faster multi-document retrieval settings for MVP/demo use
-MAX_CONTEXT_CHARS = 3000
-TOP_K_CHUNKS = 2
+TOP_K_CHUNKS = 3      # k=3 achieves 100% evidence-clause coverage (Phase 3)
+# Bounded whole-chunk context: never cut a chunk mid-sentence.
+# Each chunk is at most ~1200 chars; 3 chunks ≈ 4000 chars.
+# 8000 chars is a generous upper bound that fits within the model's context window
+# while preventing unbounded growth if k is increased in future.
+MAX_CONTEXT_CHARS = 8000
 
 
 def get_llm():
@@ -41,6 +44,33 @@ Context:
 {context}"""
 
 
+def _build_context(sources: list) -> str:
+    """Build LLM context from retrieved chunks.
+
+    Includes complete chunks up to MAX_CONTEXT_CHARS.  A chunk is always
+    included in full or not at all — never truncated mid-sentence.
+    Page numbers are 1-indexed (PyPDF stores 0-indexed; we add 1 here).
+    At least the first chunk is always included regardless of size.
+    """
+    chunk_texts = []
+    char_count = 0
+    sep = "\n\n---\n\n"
+
+    for doc in sources:
+        page_num = doc.metadata.get("page", 0) + 1  # 0-indexed → 1-indexed
+        header = f"[{doc.metadata.get('source_filename', 'Unknown')} — Page {page_num}]"
+        chunk = f"{header}\n{doc.page_content}"
+        sep_cost = len(sep) if chunk_texts else 0
+
+        if chunk_texts and char_count + sep_cost + len(chunk) > MAX_CONTEXT_CHARS:
+            break  # stop at chunk boundary — never cut mid-sentence
+
+        chunk_texts.append(chunk)
+        char_count += sep_cost + len(chunk)
+
+    return sep.join(chunk_texts)
+
+
 def ask_question(question: str):
     start = time.perf_counter()
 
@@ -54,12 +84,7 @@ def ask_question(question: str):
         elapsed = time.perf_counter() - start
         return "I cannot find enough evidence in the uploaded policy documents to answer that.", [], elapsed
 
-    context = "\n\n---\n\n".join(
-        f"[{doc.metadata.get('source_filename', 'Unknown')} — Page {doc.metadata.get('page', 'unknown')}]\n{doc.page_content}"
-        for doc in sources
-    )
-    if len(context) > MAX_CONTEXT_CHARS:
-        context = context[:MAX_CONTEXT_CHARS]
+    context = _build_context(sources)
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
