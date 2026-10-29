@@ -1,0 +1,1680 @@
+{
+  "stage": "4d",
+  "generated_at": "2026-10-29T16:47:00.774077+00:00",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "fixture_pdfs": [
+    "it_security_policy.pdf",
+    "hr_leave_policy.pdf",
+    "finance_expense_policy.pdf"
+  ],
+  "indexing_elapsed_s": 4.05,
+  "standard_rag": {
+    "mode": "standard_rag",
+    "k": 3,
+    "n_questions": 38,
+    "n_answerable": 32,
+    "n_should_refuse": 6,
+    "source_hit_rate": 1.0,
+    "key_term_coverage": 1.0,
+    "cross_doc_complete_rate": 1.0,
+    "per_category": {
+      "direct_factual": {
+        "n": 10,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0
+      },
+      "multi_section": {
+        "n": 8,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0
+      },
+      "cross_document": {
+        "n": 4,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0
+      },
+      "unsupported": {
+        "n": 6,
+        "hit_rate": 0.0,
+        "kt_rate": 0.0
+      },
+      "conflicting_or_edge": {
+        "n": 10,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0
+      }
+    },
+    "per_question": [
+      {
+        "id": "A01",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0417,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A02",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0396,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A03",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0287,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A04",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0218,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A05",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0271,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A06",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0497,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A07",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0376,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A08",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0344,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A09",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0822,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "A10",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0311,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B01",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0495,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B02",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.023,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B03",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0191,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B04",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0289,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B05",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0369,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B06",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0536,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B07",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0311,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "B08",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0542,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "C01",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0342,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "C02",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0366,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "C03",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0392,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "C04",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0778,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D01",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0441,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D02",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0305,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D03",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0278,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D04",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0331,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D05",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0256,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "D06",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0325,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E01",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0309,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E02",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.2289,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E03",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0394,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E04",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0334,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E05",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0298,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E06",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0286,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E07",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0374,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E08",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0413,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E09",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0308,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      },
+      {
+        "id": "E10",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "retrieval_elapsed_s": 0.0643,
+        "n_docs": 3,
+        "answer_type": "live_only",
+        "note": "retrieval only \u2014 no live LLM call"
+      }
+    ],
+    "live_metrics_available": false,
+    "refusal_accuracy": "requires_live_llm"
+  },
+  "agentic_rag": {
+    "mode": "agentic_rag",
+    "k_base": 3,
+    "k_max_after_retry": 6,
+    "n_questions": 38,
+    "n_answerable": 32,
+    "n_should_refuse": 6,
+    "source_hit_rate": 1.0,
+    "key_term_coverage": 1.0,
+    "cross_doc_complete_rate": 1.0,
+    "refusal_accuracy_mocked": 0.6667,
+    "estimated_live_llm_calls_per_question": "3\u20136 (classify + assess + [conflict] + generate)",
+    "per_category": {
+      "direct_factual": {
+        "n": 10,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0,
+        "avg_retries": 0.0,
+        "answer_types": {
+          "grounded": 10
+        }
+      },
+      "multi_section": {
+        "n": 8,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0,
+        "avg_retries": 0.0,
+        "answer_types": {
+          "grounded": 8
+        }
+      },
+      "cross_document": {
+        "n": 4,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0,
+        "avg_retries": 0.0,
+        "answer_types": {
+          "grounded": 4
+        }
+      },
+      "unsupported": {
+        "n": 6,
+        "hit_rate": 0.0,
+        "kt_rate": 0.0,
+        "avg_retries": 1.67,
+        "answer_types": {
+          "refusal": 4,
+          "unverified_grounded": 2
+        }
+      },
+      "conflicting_or_edge": {
+        "n": 10,
+        "hit_rate": 1.0,
+        "kt_rate": 1.0,
+        "avg_retries": 0.0,
+        "answer_types": {
+          "grounded": 10
+        }
+      }
+    },
+    "per_question": [
+      {
+        "id": "A01",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.1145,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A02",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0416,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A03",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0388,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A04",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.035,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A05",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0417,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A06",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0367,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A07",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0345,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A08",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0399,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A09",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0324,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "A10",
+        "category": "direct_factual",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0438,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B01",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0368,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B02",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0345,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B03",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0345,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B04",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0413,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B05",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0369,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B06",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0569,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B07",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0354,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "B08",
+        "category": "multi_section",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0467,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "C01",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0381,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "CONFLICT_DETECTED",
+        "conflicts_found": 1,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "C02",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0518,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "CONFLICT_DETECTED",
+        "conflicts_found": 1,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "C03",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0616,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "NO_CONFLICT",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "C04",
+        "category": "cross_document",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0665,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "CONFLICT_DETECTED",
+        "conflicts_found": 1,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D01",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.1079,
+        "answer_type": "refusal",
+        "evidence_status": "INSUFFICIENT",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 2,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D02",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.1058,
+        "answer_type": "refusal",
+        "evidence_status": "INSUFFICIENT",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 2,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D03",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.12,
+        "answer_type": "refusal",
+        "evidence_status": "INSUFFICIENT",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 2,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D04",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0581,
+        "answer_type": "unverified_grounded",
+        "evidence_status": "UNAVAILABLE",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 1,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D05",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0684,
+        "answer_type": "unverified_grounded",
+        "evidence_status": "UNAVAILABLE",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 1,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "D06",
+        "category": "unsupported",
+        "should_refuse": true,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.1027,
+        "answer_type": "refusal",
+        "evidence_status": "INSUFFICIENT",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 2,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E01",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0321,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E02",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0259,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E03",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0273,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E04",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0437,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E05",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0292,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E06",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0246,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E07",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "hr_leave_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0327,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E08",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "hr_leave_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0307,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E09",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0315,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      },
+      {
+        "id": "E10",
+        "category": "conflicting_or_edge",
+        "should_refuse": false,
+        "source_hit": true,
+        "key_term_hit": true,
+        "cross_doc_complete": true,
+        "missing_terms": [],
+        "retrieved_files": [
+          "finance_expense_policy.pdf",
+          "it_security_policy.pdf"
+        ],
+        "n_docs": 3,
+        "retrieval_elapsed_s": 0.0814,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "conflict_status": "",
+        "conflicts_found": 0,
+        "retry_count": 0,
+        "error": null,
+        "note": "mocked LLM \u2014 answer text not evaluated"
+      }
+    ],
+    "live_metrics_available": false,
+    "refusal_accuracy": "mocked_only \u2014 see refusal_accuracy_mocked",
+    "answer_text_accuracy": "NOT_EVALUATED \u2014 requires live NVIDIA inference"
+  },
+  "citation_validation": {
+    "mode": "citation_validation",
+    "n_cases": 5,
+    "n_passed": 5,
+    "pass_rate": 1.0,
+    "cases": [
+      {
+        "id": "CIT01",
+        "desc": "All citations valid",
+        "expected_stripped": 0,
+        "actual_stripped": 0,
+        "passed": true,
+        "warnings": []
+      },
+      {
+        "id": "CIT02",
+        "desc": "One fabricated filename",
+        "expected_stripped": 1,
+        "actual_stripped": 1,
+        "passed": true,
+        "warnings": [
+          "Removed citation 'fabricated_policy.pdf': document not in retrieved set"
+        ]
+      },
+      {
+        "id": "CIT03",
+        "desc": "Wrong page number",
+        "expected_stripped": 1,
+        "actual_stripped": 1,
+        "passed": true,
+        "warnings": [
+          "Removed citation 'it_security_policy.pdf, Page 99': page not present in retrieved chunks"
+        ]
+      },
+      {
+        "id": "CIT04",
+        "desc": "All citations fabricated",
+        "expected_stripped": 2,
+        "actual_stripped": 2,
+        "passed": true,
+        "warnings": [
+          "Removed citation 'nonexistent.pdf': document not in retrieved set",
+          "Removed citation 'fake.pdf': document not in retrieved set"
+        ]
+      },
+      {
+        "id": "CIT05",
+        "desc": "No citations in answer",
+        "expected_stripped": 0,
+        "actual_stripped": 0,
+        "passed": true,
+        "warnings": []
+      }
+    ]
+  },
+  "difficult_scenarios": {
+    "mode": "difficult_scenarios",
+    "n_scenarios": 6,
+    "n_passed": 6,
+    "pass_rate": 1.0,
+    "scenarios": [
+      {
+        "scenario": "partial_supported_triggers_retry",
+        "retry_count": 1,
+        "answer_type": "grounded",
+        "evidence_status": "SUPPORTED",
+        "passed": true,
+        "note": "PARTIALLY_SUPPORTED must trigger at least 1 retry"
+      },
+      {
+        "scenario": "llm_assessment_failure_produces_unverified",
+        "answer_type": "unverified_grounded",
+        "evidence_status": "UNAVAILABLE",
+        "passed": true,
+        "note": "LLM failure during evidence assessment must not produce 'grounded'"
+      },
+      {
+        "scenario": "missing_api_key_raises_value_error",
+        "passed": true,
+        "note": "get_agent_llm() must raise ValueError when key absent; ChatNVIDIA never constructed"
+      },
+      {
+        "scenario": "all_citations_fabricated_produces_fallback",
+        "answer_type": "excerpt_fallback",
+        "passed": true,
+        "note": "All fabricated citations must trigger excerpt_fallback, not 'grounded'"
+      },
+      {
+        "scenario": "insufficient_evidence_produces_refusal",
+        "answer_type": "refusal",
+        "passed": true,
+        "note": "INSUFFICIENT evidence must produce 'refusal' answer_type"
+      },
+      {
+        "scenario": "conflicting_evidence_detected_and_reported",
+        "conflict_status": "CONFLICT_DETECTED",
+        "n_conflicts": 1,
+        "passed": true,
+        "note": "CONFLICTING evidence must produce conflict_status=CONFLICT_DETECTED with descriptions"
+      }
+    ]
+  }
+}
