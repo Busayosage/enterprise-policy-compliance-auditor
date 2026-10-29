@@ -29,8 +29,8 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from evaluation_dataset import EVALUATION_QUESTIONS, CATEGORIES
@@ -65,8 +65,7 @@ CROSS_DOC_QS = [q for q in EVALUATION_QUESTIONS if q["category"] == "cross_docum
 # â”€â”€â”€ Session-scoped fixture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @pytest.fixture(scope="session")
-def shared_retriever(tmp_path_factory):
-    chroma_dir = str(tmp_path_factory.mktemp("4d_chroma"))
+def shared_retriever():
     pdf_names = [
         "it_security_policy.pdf",
         "hr_leave_policy.pdf",
@@ -84,16 +83,10 @@ def shared_retriever(tmp_path_factory):
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = splitter.split_documents(all_chunks)
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vs = Chroma.from_documents(
-        documents=chunks,
-        embedding=embeddings,
-        persist_directory=chroma_dir,
-        collection_name="4d_eval",
-    )
+    vs = InMemoryVectorStore(embedding=embeddings)
+    vs.add_documents(chunks)
     retriever = vs.as_retriever(search_kwargs={"k": TOP_K})
     yield retriever
-    import gc; gc.collect()
-    shutil.rmtree(chroma_dir, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
@@ -515,6 +508,96 @@ class TestAgenticBehaviourDifferences:
         final = compiled_graph.invoke(state)
         assert final.get("answer_type") == "refusal", (
             f"Expected 'refusal', got {final.get('answer_type')!r}"
+        )
+
+    def test_unavailable_status_with_no_heuristic_coverage_refuses(self, compiled_graph):
+        """Safety gate: UNAVAILABLE evidence + heuristic says insufficient → refusal.
+
+        Regression for Task B: two D-category questions returned unverified_grounded
+        when the LLM assessment threw an exception and the heuristic found no coverage.
+        The graph must refuse rather than generate an unverified answer in this case.
+        """
+        doc = Document(
+            page_content="Annual leave entitlement is 25 days.",
+            metadata={"source_filename": "hr_leave_policy.pdf", "page": 0},
+        )
+        mock_llm = MagicMock()
+        structured = MagicMock()
+        call_count = [0]
+
+        def _call(messages):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return ClassificationOutput(
+                    category="direct_factual",
+                    intent="unsupported",
+                    requires_cross_doc=False,
+                )
+            else:
+                raise RuntimeError("LLM unavailable")
+
+        structured.side_effect = _call
+        structured.invoke.side_effect = _call
+        mock_llm.with_structured_output.return_value = structured
+        mock_llm.side_effect = lambda m: MagicMock(content="No evidence found.")
+
+        state = make_initial_state(
+            "What is the company astrology policy?",
+            retriever=_stub_retriever([doc]),
+            llm_override=mock_llm,
+            available_sources=AVAILABLE_SOURCES,
+        )
+        final = compiled_graph.invoke(state)
+        assert final.get("answer_type") == "refusal", (
+            f"UNAVAILABLE+not-sufficient must refuse; got {final.get('answer_type')!r} "
+            f"(evidence_status={final.get('evidence_status')!r})"
+        )
+
+    def test_unavailable_status_with_positive_heuristic_coverage_is_unverified(
+        self, compiled_graph
+    ):
+        """Safety gate: UNAVAILABLE evidence + heuristic says sufficient → unverified_grounded.
+
+        When the LLM fails but the heuristic finds positive keyword coverage, the graph
+        should still generate an answer but mark it unverified, not refuse.
+        Answerability depends on evidence — not on hard-coded topic lists.
+        """
+        doc = Document(
+            page_content="Remote access requires MFA authentication for all employees.",
+            metadata={"source_filename": "it_security_policy.pdf", "page": 1},
+        )
+        mock_llm = MagicMock()
+        structured = MagicMock()
+        call_count = [0]
+
+        def _call(messages):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return ClassificationOutput(
+                    category="direct_factual",
+                    intent="MFA requirement",
+                    requires_cross_doc=False,
+                )
+            else:
+                raise RuntimeError("LLM unavailable")
+
+        structured.side_effect = _call
+        structured.invoke.side_effect = _call
+        mock_llm.with_structured_output.return_value = structured
+        mock_llm.side_effect = lambda m: MagicMock(content="MFA is required for remote access.")
+
+        state = make_initial_state(
+            "What does the policy require for remote access authentication?",
+            retriever=_stub_retriever([doc]),
+            llm_override=mock_llm,
+            available_sources=AVAILABLE_SOURCES,
+        )
+        final = compiled_graph.invoke(state)
+        assert final.get("answer_type") in ("unverified_grounded", "excerpt_fallback"), (
+            f"UNAVAILABLE+sufficient should generate unverified answer; "
+            f"got {final.get('answer_type')!r}"
         )
 
     def test_agentic_conflict_detection_fires_on_cross_doc(self, compiled_graph):

@@ -30,15 +30,11 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# ── Pre-stub incompatible / heavy deps before AppTest imports app.py ──────────
-# chromadb on Python 3.13 has a broken opentelemetry dependency in the global
-# site-packages, so we stub the entire module tree here.
-def _stub(*names):
-    for n in names:
-        if n not in sys.modules:
-            sys.modules[n] = MagicMock()
-
-_stub(
+# ── Module names that AppTest needs stubbed (chromadb has a broken opentelemetry
+# dep on Python 3.13 in the global site-packages).  These are injected into
+# sys.modules only for the duration of this test module, then removed/restored
+# so they don't pollute test_comparative_4d.py's real ChromaDB imports.
+_APPTEST_STUB_NAMES = (
     "chromadb", "chromadb.api", "chromadb.api.shared_system_client",
     "chromadb.auth", "chromadb.auth.token_authn",
     "chromadb.telemetry", "chromadb.telemetry.opentelemetry",
@@ -55,6 +51,27 @@ _stub(
     "opentelemetry.sdk.util.instrumentation",
     "sentence_transformers",
 )
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _apptest_stubs():
+    """Inject sys.modules stubs for this module only, then restore originals.
+
+    Isolating these stubs in a fixture (rather than at module-import time)
+    prevents them from polluting test_comparative_4d.py's real ChromaDB
+    imports, which are collected later in the same pytest process.
+    """
+    saved = {n: sys.modules.get(n) for n in _APPTEST_STUB_NAMES}
+    for n in _APPTEST_STUB_NAMES:
+        if n not in sys.modules:
+            sys.modules[n] = MagicMock()
+    yield
+    for n, orig in saved.items():
+        if orig is None:
+            sys.modules.pop(n, None)
+        else:
+            sys.modules[n] = orig
+
 
 from streamlit.testing.v1 import AppTest  # noqa: E402
 

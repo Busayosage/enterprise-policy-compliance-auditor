@@ -1,9 +1,9 @@
 # Stage 4d: Comparative Evaluation Report
 
-**Generated:** 2026-10-29T16:47:00.774077+00:00  
+**Generated:** 2026-10-29T23:46:26.882961+00:00  
 **Embedding model:** sentence-transformers/all-MiniLM-L6-v2  
 **Fixture PDFs:** it_security_policy.pdf, hr_leave_policy.pdf, finance_expense_policy.pdf  
-**Indexing time:** 4.05s  
+**Indexing time:** 2.49s  
 
 ## Evaluation Scope and Methodology
 
@@ -30,7 +30,7 @@
 | Source-doc hit rate | 100.0% | 100.0% | Retriever only |
 | Key-term coverage | 100.0% | 100.0% | Retriever only |
 | Cross-doc complete rate | 100.0% | 100.0% | Both files retrieved |
-| Refusal accuracy | n/a (live only) | 66.7% (mocked) | D01–D06 |
+| Refusal accuracy | n/a (live only) | 100.0% (mocked) | D01–D06 |
 | Citation validation | n/a | 100.0% | 5 cases |
 | Difficult scenarios | n/a | 6/6 passed | See below |
 | LLM calls per question (live) | 1 | 3–6 (classify + assess + [conflict] + generate) | Overhead |
@@ -72,7 +72,7 @@ LLM: mocked — answer text not evaluated
 | direct_factual | 10 | 100.0% | 100.0% | 0.0 | grounded:10 |
 | multi_section | 8 | 100.0% | 100.0% | 0.0 | grounded:8 |
 | cross_document | 4 | 100.0% | 100.0% | 0.0 | grounded:4 |
-| unsupported | 6 | 0.0% | 0.0% | 1.67 | refusal:4 / unverified_grounded:2 |
+| unsupported | 6 | 0.0% | 0.0% | 2.0 | refusal:6 |
 | conflicting_or_edge | 10 | 100.0% | 100.0% | 0.0 | grounded:10 |
 
 ### Answer type distribution (mocked LLM)
@@ -80,8 +80,7 @@ LLM: mocked — answer text not evaluated
 | Answer type | Count | % |
 |-------------|-------|---|
 | grounded | 32 | 84.2% |
-| refusal | 4 | 10.5% |
-| unverified_grounded | 2 | 5.3% |
+| refusal | 6 | 15.8% |
 
 ---
 

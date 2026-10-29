@@ -716,6 +716,17 @@ def generate_grounded_answer(state: AgentState) -> dict:
     ):
         return {"answer": _REFUSAL_MESSAGE, "sources": [], "answer_type": "refusal"}
 
+    # LLM assessment failed (UNAVAILABLE) and heuristic also says insufficient → refuse.
+    # Heuristic keyword-overlap is not strong enough evidence to generate an answer when
+    # the LLM could not confirm relevance.  Only proceed to unverified_grounded when the
+    # heuristic finds positive coverage (sufficient=True).
+    if (
+        evidence_status == _STATUS_UNAVAILABLE
+        and evidence
+        and not evidence.get("sufficient")
+    ):
+        return {"answer": _REFUSAL_MESSAGE, "sources": [], "answer_type": "refusal"}
+
     from agent.llm import get_agent_llm, build_agent_context, validate_answer_citations, AGENT_SYSTEM_PROMPT
     from langchain_core.prompts import ChatPromptTemplate
     import re as _re

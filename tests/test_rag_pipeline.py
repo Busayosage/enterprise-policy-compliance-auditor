@@ -9,8 +9,8 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.messages import AIMessage
 
@@ -18,10 +18,27 @@ EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 REFUSAL_PHRASE = "I cannot find enough evidence"
 
 
-def _build_store(uploaded_files, chroma_dir, temp_dir):
-    """Delegate to database.index_documents() with isolated directories."""
-    import database
-    database.index_documents(uploaded_files, chroma_dir=chroma_dir, temp_dir=temp_dir)
+def _build_inmemory_retriever(uploaded_files, k=3):
+    """Build an InMemoryVectorStore retriever from FakeUploadedFile objects."""
+    import tempfile
+    embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
+    all_chunks = []
+    for f in uploaded_files:
+        data = f.getbuffer()
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(data)
+            tmp_path = tmp.name
+        loader = PyPDFLoader(tmp_path)
+        docs = loader.load()
+        for doc in docs:
+            doc.metadata["source_filename"] = f.name
+        all_chunks.extend(docs)
+        os.unlink(tmp_path)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    chunks = splitter.split_documents(all_chunks)
+    vs = InMemoryVectorStore(embedding=embeddings)
+    vs.add_documents(chunks)
+    return vs.as_retriever(search_kwargs={"k": k})
 
 
 # ---------------------------------------------------------------------------
@@ -90,11 +107,9 @@ class TestMockedLLMResponse:
         mock_prompt_obj.__or__ = MagicMock(return_value=mock_chain)
         return mock_llm, mock_prompt_obj, mock_chain
 
-    def test_ask_question_returns_llm_answer_string(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
+    def test_ask_question_returns_llm_answer_string(self, it_policy_file):
         """ask_question() passes the LLM response back as the answer string."""
-        _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        import database
-        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
+        real_retriever = _build_inmemory_retriever([it_policy_file], k=2)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain(
             "Passwords must be at least 12 characters long."
@@ -109,11 +124,9 @@ class TestMockedLLMResponse:
         assert isinstance(answer, str)
         assert len(answer) > 0
 
-    def test_ask_question_returns_sources_list(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
+    def test_ask_question_returns_sources_list(self, it_policy_file):
         """ask_question() returns a non-empty sources list when retrieval succeeds."""
-        _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        import database
-        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
+        real_retriever = _build_inmemory_retriever([it_policy_file], k=2)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain(
             "MFA is required for all remote access."
@@ -128,11 +141,9 @@ class TestMockedLLMResponse:
         assert isinstance(sources, list)
         assert len(sources) > 0
 
-    def test_ask_question_returns_elapsed_time(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
+    def test_ask_question_returns_elapsed_time(self, it_policy_file):
         """ask_question() always returns a non-negative float for elapsed time."""
-        _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        import database
-        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
+        real_retriever = _build_inmemory_retriever([it_policy_file], k=2)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain("The VPN is required.")
         with patch("main.load_retriever", return_value=real_retriever), \
@@ -173,13 +184,11 @@ class TestMockedLLMResponse:
 
 class TestAnswerGrounding:
 
-    def test_page_numbers_are_one_indexed(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
+    def test_page_numbers_are_one_indexed(self, it_policy_file):
         """Context string must display page numbers starting at 1, not 0.
         PyPDF returns 0-indexed pages; main.py must add 1 before displaying.
         """
-        _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        import database
-        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
+        real_retriever = _build_inmemory_retriever([it_policy_file], k=2)
 
         captured_context = {}
 
@@ -206,15 +215,13 @@ class TestAnswerGrounding:
         )
         assert "Page " in ctx, "Context should include a Page reference"
 
-    def test_context_is_not_truncated(self, tmp_chroma_dir, tmp_temp_dir,
-                                       it_policy_file, hr_policy_file, finance_policy_file):
+    def test_context_is_not_truncated(self, it_policy_file, hr_policy_file, finance_policy_file):
         """Retrieved chunks must not be mid-sentence truncated before passing to the LLM.
         Phase 3 removed the MAX_CONTEXT_CHARS hard-cut.
         """
-        _build_store([it_policy_file, hr_policy_file, finance_policy_file],
-                     tmp_chroma_dir, tmp_temp_dir)
-        import database
-        real_retriever = database.load_retriever(k=3, chroma_dir=tmp_chroma_dir)
+        real_retriever = _build_inmemory_retriever(
+            [it_policy_file, hr_policy_file, finance_policy_file], k=3
+        )
 
         captured_context = {}
 

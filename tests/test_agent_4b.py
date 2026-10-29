@@ -1062,16 +1062,15 @@ REFUSAL_QS = [q for q in EVALUATION_QUESTIONS if q["should_refuse"]]
 
 
 @pytest.fixture(scope="module")
-def agent_retriever(tmp_path_factory):
-    """Build a shared in-memory ChromaDB store from all 3 fixture PDFs.
+def agent_retriever():
+    """Build a shared in-memory vector store from all 3 fixture PDFs.
     Same setup as test_rag_evaluation.py to allow direct comparison.
     """
     from langchain_community.embeddings import HuggingFaceEmbeddings
-    from langchain_community.vectorstores import Chroma
     from langchain_community.document_loaders import PyPDFLoader
+    from langchain_core.vectorstores import InMemoryVectorStore
     from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-    chroma_dir = str(tmp_path_factory.mktemp("4b_chroma"))
     pdf_names = [
         "it_security_policy.pdf",
         "hr_leave_policy.pdf",
@@ -1089,18 +1088,10 @@ def agent_retriever(tmp_path_factory):
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = splitter.split_documents(all_chunks)
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vs = Chroma.from_documents(
-        documents=chunks,
-        embedding=embeddings,
-        persist_directory=chroma_dir,
-        collection_name="policy_docs_4b",
-    )
+    vs = InMemoryVectorStore(embedding=embeddings)
+    vs.add_documents(chunks)
     retriever = vs.as_retriever(search_kwargs={"k": TOP_K})
     yield retriever
-
-    import gc
-    gc.collect()
-    shutil.rmtree(chroma_dir, ignore_errors=True)
 
 
 def _hit(docs, expected_files):

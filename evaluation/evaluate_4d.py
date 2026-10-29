@@ -53,8 +53,8 @@ sys.path.insert(0, _ROOT)
 sys.path.insert(0, os.path.join(_ROOT, "tests"))
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
@@ -95,8 +95,8 @@ AGENTIC_K  = 3   # matches agent._BASE_K
 # Shared vector store
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def build_vector_store(chroma_dir: str):
-    """Index all three fixture PDFs into a temporary ChromaDB."""
+def build_vector_store(chroma_dir: str = ""):
+    """Index all three fixture PDFs into an InMemoryVectorStore."""
     pdf_names = [
         "it_security_policy.pdf",
         "hr_leave_policy.pdf",
@@ -115,12 +115,8 @@ def build_vector_store(chroma_dir: str):
     chunks = splitter.split_documents(all_chunks)
 
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vs = Chroma.from_documents(
-        documents=chunks,
-        embedding=embeddings,
-        persist_directory=chroma_dir,
-        collection_name="eval_policy_docs",
-    )
+    vs = InMemoryVectorStore(embedding=embeddings)
+    vs.add_documents(chunks)
     return vs
 
 
@@ -255,8 +251,9 @@ def _make_insufficient_llm() -> MagicMock:
         reasoning="No relevant policy clauses found.",
     )
     mock.side_effect = lambda messages: MagicMock(content="I cannot find evidence.")
+    # Provide enough responses for initial assess + _MAX_RETRIES re-assessments (3 total).
     mock.with_structured_output.return_value = _make_structured_seq(
-        classify_out, evidence_out
+        classify_out, evidence_out, evidence_out, evidence_out
     )
     return mock
 
