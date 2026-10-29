@@ -41,7 +41,9 @@ jobs:
         run: python tests/fixtures/make_fixtures.py
 
       - name: Run pytest suite
-        run: pytest tests/ -v --tb=short -x
+        run: |
+          set -o pipefail
+          pytest tests/ -v --tb=long -x 2>&1 | tee pytest-output.txt
         env:
           NVIDIA_API_KEY: ""
           SNOWFLAKE_ACCOUNT: ""
@@ -51,3 +53,11 @@ jobs:
           SNOWFLAKE_DATABASE: ""
           SNOWFLAKE_SCHEMA: ""
           SNOWFLAKE_ROLE: ""
+
+      - name: Upload pytest output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output
+          path: pytest-output.txt
+          retention-days: 7

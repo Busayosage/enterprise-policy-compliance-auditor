@@ -22,7 +22,7 @@ from evaluation_dataset import EVALUATION_QUESTIONS, CATEGORIES
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-TOP_K = 2  # matches main.TOP_K_CHUNKS
+TOP_K = 3  # matches main.TOP_K_CHUNKS (raised from 2 in Phase 3)
 
 
 def _fixture_path(name: str) -> str:
@@ -58,7 +58,8 @@ def all_docs_store(tmp_path_factory):
     chunks = splitter.split_documents(all_chunks)
 
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vs = Chroma.from_documents(documents=chunks, embedding=embeddings, persist_directory=chroma_dir)
+    vs = Chroma.from_documents(documents=chunks, embedding=embeddings,
+                               persist_directory=chroma_dir, collection_name="policy_docs")
 
     retriever = vs.as_retriever(search_kwargs={"k": TOP_K})
     yield retriever
@@ -138,13 +139,12 @@ def test_evidence_clause_coverage(entry, all_docs_store):
         pytest.skip("No key terms defined for this entry")
     docs = _retrieve(all_docs_store, entry["question"])
     covered = _check_key_terms(docs, entry["key_terms"])
-    if not covered:
-        combined = " ".join(d.page_content for d in docs)
-        missing = [t for t in entry["key_terms"] if t.lower() not in combined.lower()]
-        pytest.xfail(
-            f"[{entry['id']}] Key terms not found in top-{TOP_K} chunk text: {missing}\n"
-            f"(k={TOP_K} insufficient; increase k or chunk_overlap to retrieve all clauses)"
-        )
+    combined = " ".join(d.page_content for d in docs)
+    missing = [t for t in entry["key_terms"] if t.lower() not in combined.lower()]
+    assert covered, (
+        f"[{entry['id']}] Key terms not found in top-{TOP_K} chunk text: {missing}\n"
+        f"Question: {entry['question']}"
+    )
 
 
 @pytest.mark.parametrize("entry", REFUSAL_QUESTIONS, ids=[q["id"] for q in REFUSAL_QUESTIONS])
@@ -165,7 +165,7 @@ def test_unsupported_question_retrieval_is_low_confidence(entry, all_docs_store)
 # ---------------------------------------------------------------------------
 
 def test_aggregate_retrieval_baseline(all_docs_store, capsys):
-    """Compute and print aggregate baseline metrics across all 40 questions."""
+    """Compute and print aggregate baseline metrics across all 38 questions."""
     hits = 0
     key_term_hits = 0
     total_non_refusal = len(NON_REFUSAL_QUESTIONS)

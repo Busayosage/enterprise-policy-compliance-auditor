@@ -19,25 +19,9 @@ REFUSAL_PHRASE = "I cannot find enough evidence"
 
 
 def _build_store(uploaded_files, chroma_dir, temp_dir):
-    """Build an isolated vector store, mirroring database.index_documents()."""
-    os.makedirs(temp_dir, exist_ok=True)
-    all_chunks = []
-    for f in uploaded_files:
-        tmp_path = os.path.join(temp_dir, f.name)
-        with open(tmp_path, "wb") as fh:
-            fh.write(f.getbuffer())
-        loader = PyPDFLoader(tmp_path)
-        documents = loader.load()
-        for doc in documents:
-            doc.metadata["source_filename"] = f.name
-        all_chunks.extend(documents)
-        os.remove(tmp_path)
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    chunks = splitter.split_documents(all_chunks)
-    if os.path.exists(chroma_dir):
-        shutil.rmtree(chroma_dir)
-    embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    Chroma.from_documents(documents=chunks, embedding=embeddings, persist_directory=chroma_dir)
+    """Delegate to database.index_documents() with isolated directories."""
+    import database
+    database.index_documents(uploaded_files, chroma_dir=chroma_dir, temp_dir=temp_dir)
 
 
 # ---------------------------------------------------------------------------
@@ -109,9 +93,8 @@ class TestMockedLLMResponse:
     def test_ask_question_returns_llm_answer_string(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
         """ask_question() passes the LLM response back as the answer string."""
         _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-        vs = Chroma(persist_directory=tmp_chroma_dir, embedding_function=embeddings)
-        real_retriever = vs.as_retriever(search_kwargs={"k": 2})
+        import database
+        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain(
             "Passwords must be at least 12 characters long."
@@ -129,9 +112,8 @@ class TestMockedLLMResponse:
     def test_ask_question_returns_sources_list(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
         """ask_question() returns a non-empty sources list when retrieval succeeds."""
         _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-        vs = Chroma(persist_directory=tmp_chroma_dir, embedding_function=embeddings)
-        real_retriever = vs.as_retriever(search_kwargs={"k": 2})
+        import database
+        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain(
             "MFA is required for all remote access."
@@ -149,9 +131,8 @@ class TestMockedLLMResponse:
     def test_ask_question_returns_elapsed_time(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
         """ask_question() always returns a non-negative float for elapsed time."""
         _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
-        embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-        vs = Chroma(persist_directory=tmp_chroma_dir, embedding_function=embeddings)
-        real_retriever = vs.as_retriever(search_kwargs={"k": 2})
+        import database
+        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
 
         mock_llm, mock_prompt_obj, mock_chain = self._patch_llm_chain("The VPN is required.")
         with patch("main.load_retriever", return_value=real_retriever), \
@@ -184,3 +165,80 @@ class TestMockedLLMResponse:
             import main
             with pytest.raises(ValueError, match="NVIDIA_API_KEY"):
                 main.get_llm()
+
+
+# ---------------------------------------------------------------------------
+# 7. Answer grounding — page number and context completeness (Phase 3)
+# ---------------------------------------------------------------------------
+
+class TestAnswerGrounding:
+
+    def test_page_numbers_are_one_indexed(self, tmp_chroma_dir, tmp_temp_dir, it_policy_file):
+        """Context string must display page numbers starting at 1, not 0.
+        PyPDF returns 0-indexed pages; main.py must add 1 before displaying.
+        """
+        _build_store([it_policy_file], tmp_chroma_dir, tmp_temp_dir)
+        import database
+        real_retriever = database.load_retriever(k=2, chroma_dir=tmp_chroma_dir)
+
+        captured_context = {}
+
+        def capture_chain_invoke(inputs):
+            captured_context["context"] = inputs.get("context", "")
+            return AIMessage(content="answer")
+
+        mock_chain = MagicMock()
+        mock_chain.invoke.side_effect = capture_chain_invoke
+        mock_llm = MagicMock()
+        mock_prompt_obj = MagicMock()
+        mock_prompt_obj.__or__ = MagicMock(return_value=mock_chain)
+
+        with patch("main.load_retriever", return_value=real_retriever), \
+             patch("main.get_llm", return_value=mock_llm), \
+             patch("main.ChatPromptTemplate") as mock_cpt:
+            mock_cpt.from_messages.return_value = mock_prompt_obj
+            import main
+            main.ask_question("password policy")
+
+        ctx = captured_context.get("context", "")
+        assert "Page 0" not in ctx, (
+            f"Context contains 0-indexed page number — expected 1-indexed.\nContext: {ctx[:200]}"
+        )
+        assert "Page " in ctx, "Context should include a Page reference"
+
+    def test_context_is_not_truncated(self, tmp_chroma_dir, tmp_temp_dir,
+                                       it_policy_file, hr_policy_file, finance_policy_file):
+        """Retrieved chunks must not be mid-sentence truncated before passing to the LLM.
+        Phase 3 removed the MAX_CONTEXT_CHARS hard-cut.
+        """
+        _build_store([it_policy_file, hr_policy_file, finance_policy_file],
+                     tmp_chroma_dir, tmp_temp_dir)
+        import database
+        real_retriever = database.load_retriever(k=3, chroma_dir=tmp_chroma_dir)
+
+        captured_context = {}
+
+        mock_chain = MagicMock()
+        mock_chain.invoke.return_value = AIMessage(content="answer")
+
+        def capture(inputs):
+            captured_context["context"] = inputs.get("context", "")
+            return AIMessage(content="answer")
+
+        mock_chain.invoke.side_effect = capture
+        mock_llm = MagicMock()
+        mock_prompt_obj = MagicMock()
+        mock_prompt_obj.__or__ = MagicMock(return_value=mock_chain)
+
+        with patch("main.load_retriever", return_value=real_retriever), \
+             patch("main.get_llm", return_value=mock_llm), \
+             patch("main.ChatPromptTemplate") as mock_cpt:
+            mock_cpt.from_messages.return_value = mock_prompt_obj
+            import main
+            main.ask_question("software subscription approval")
+
+        ctx = captured_context.get("context", "")
+        # Context must not be hard-cut at 3000 chars (old limit)
+        assert len(ctx) != 3000, (
+            "Context appears hard-cut at 3000 characters — MAX_CONTEXT_CHARS truncation not removed"
+        )
