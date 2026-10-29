@@ -41,6 +41,7 @@ import os
 import shutil
 
 import chromadb
+from chromadb.api.shared_system_client import SharedSystemClient
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -121,6 +122,15 @@ def _clear_slot(slot_dir: str) -> None:
     except Exception:
         pass
 
+    # Evict all cached chromadb Systems from the global registry before deleting
+    # the directory. chromadb.PersistentClient reuses a cached System for the
+    # same path rather than creating a fresh one; without this eviction the next
+    # Chroma.from_documents() call would get a stale System whose SQLite
+    # connections point to unlinked (deleted) file inodes on Linux, causing
+    # Finance docs (cycle 3) to be written to ghost storage and the validation
+    # step to return no chunks — manifesting as ok=False.
+    SharedSystemClient.clear_system_cache()
+
     # Step 2: best-effort directory removal (not required for correctness).
     shutil.rmtree(slot_dir, ignore_errors=True)
 
@@ -182,6 +192,7 @@ def _validate_slot(slot_dir: str, expected_filenames: list[str]) -> None:
         collection_name=_COLLECTION_NAME,
     )
     result = vs.get(include=["metadatas"])
+    vs._client.close()
     del vs
     gc.collect()
 

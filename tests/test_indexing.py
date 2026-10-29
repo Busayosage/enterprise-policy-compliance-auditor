@@ -393,14 +393,15 @@ class TestVersionedIndexSafety:
             (finance_policy_file, "finance_expense_policy.pdf",
              {"it_security_policy.pdf", "hr_leave_policy.pdf"}),
         ]:
-            ok, _, _, _, _ = _index_to([policy_file], tmp_chroma_dir, tmp_temp_dir)
-            assert ok is True, f"Indexing {expected_name} failed"
+            ok, msg, _, _, _ = _index_to([policy_file], tmp_chroma_dir, tmp_temp_dir)
+            assert ok is True, f"Indexing {expected_name} failed: {msg}"
 
             active = _active_dir(tmp_chroma_dir)
             vs = Chroma(persist_directory=active, embedding_function=_get_embeddings(),
                         collection_name=database._COLLECTION_NAME)
             all_docs = vs.get(include=["metadatas"])
             found = {m.get("source_filename") for m in all_docs["metadatas"]}
+            vs._client.close()
             del vs
             gc.collect()
 
