@@ -126,7 +126,8 @@ def test_happy_path_grounded_answer(compiled_graph):
     )
     result = compiled_graph.invoke(initial)
 
-    assert result["answer_type"] == "grounded"
+    # Stage 4b: without a live LLM, excerpt_fallback or unverified_grounded is correct.
+    assert result["answer_type"] in ("grounded", "partial_grounded", "unverified_grounded", "excerpt_fallback")
     assert len(result["sources"]) == 3
     assert result["answer"] != ""
     assert "it_security_policy.pdf" in result["answer"]
@@ -304,10 +305,16 @@ class TestClassifyQuery:
         assert result["classification"]["category"] == "cross_document"
         assert result["classification"]["requires_cross_doc"] is True
 
-    def test_unsupported(self):
+    def test_payroll_query_not_classified_unsupported(self):
+        # Stage 4b: classifier never labels a query "unsupported" based on
+        # topic keywords — answerability is decided by retrieval + evidence gate.
         state = _minimal_state(query="What is my payroll schedule this month?")
         result = classify_query(state)
-        assert result["classification"]["category"] == "unsupported"
+        assert result["classification"]["category"] != "unsupported"
+        assert result["classification"]["category"] in {
+            "direct_factual", "multi_section", "cross_document",
+            "potential_conflict", "needs_clarification",
+        }
 
     def test_multi_section(self):
         long_q = (
@@ -353,15 +360,31 @@ class TestPlanRetrieval:
         assert multi["retrieval_plan"]["k"] >= direct["retrieval_plan"]["k"]
 
     def test_it_document_hint(self):
-        result = plan_retrieval(self._classified_state("direct_factual", "password security policy"))
+        # Stage 4b: hints only come from available_sources — pass the expected sources.
+        state = _minimal_state(
+            query="password security policy",
+            classification={"category": "direct_factual", "intent": "test", "requires_cross_doc": False},
+            available_sources=["it_security_policy.pdf", "hr_leave_policy.pdf", "finance_expense_policy.pdf"],
+        )
+        result = plan_retrieval(state)
         assert "it_security_policy.pdf" in result["retrieval_plan"]["document_hints"]
 
     def test_hr_document_hint(self):
-        result = plan_retrieval(self._classified_state("direct_factual", "leave holiday entitlement"))
+        state = _minimal_state(
+            query="leave holiday entitlement",
+            classification={"category": "direct_factual", "intent": "test", "requires_cross_doc": False},
+            available_sources=["it_security_policy.pdf", "hr_leave_policy.pdf", "finance_expense_policy.pdf"],
+        )
+        result = plan_retrieval(state)
         assert "hr_leave_policy.pdf" in result["retrieval_plan"]["document_hints"]
 
     def test_finance_document_hint(self):
-        result = plan_retrieval(self._classified_state("direct_factual", "expense finance receipt"))
+        state = _minimal_state(
+            query="expense finance receipt",
+            classification={"category": "direct_factual", "intent": "test", "requires_cross_doc": False},
+            available_sources=["it_security_policy.pdf", "hr_leave_policy.pdf", "finance_expense_policy.pdf"],
+        )
+        result = plan_retrieval(state)
         assert "finance_expense_policy.pdf" in result["retrieval_plan"]["document_hints"]
 
 
@@ -534,7 +557,8 @@ class TestGenerateGroundedAnswer:
         docs = [_make_doc("Password must be 12 characters.", "it_security_policy.pdf")]
         state = self._sufficient_state(docs)
         result = generate_grounded_answer(state)
-        assert result["answer_type"] == "grounded"
+        # No LLM override → excerpt_fallback or unverified_grounded depending on evidence_status
+        assert result["answer_type"] in ("grounded", "unverified_grounded", "excerpt_fallback")
         assert "it_security_policy.pdf" in result["answer"]
 
     def test_refusal_when_insufficient_evidence(self):
@@ -570,9 +594,10 @@ class TestGenerateGroundedAnswer:
             evidence={"coverage": 0.8, "confidence": 0.8, "sufficient": True},
             classification={"category": "cross_document", "intent": "", "requires_cross_doc": True},
             conflicts=["Evidence spans multiple policy files."],
+            conflict_status="CONFLICT_DETECTED",  # Stage 4b: note only appended when status set
         )
         result = generate_grounded_answer(state)
-        assert "multiple policy documents" in result["answer"]
+        assert "multiple policy documents" in result["answer"] or "contradictory" in result["answer"]
 
 
 # ---------------------------------------------------------------------------

@@ -18,6 +18,8 @@ def run_agent(
     question: str,
     *,
     retriever=None,
+    llm_override=None,
+    available_sources=None,
     graph=None,
 ) -> AgentState:
     """Run the agentic RAG pipeline for one question.
@@ -36,6 +38,11 @@ def run_agent(
     if graph is None:
         graph = build_graph()
 
-    initial = make_initial_state(question, retriever=retriever)
+    initial = make_initial_state(
+        question,
+        retriever=retriever,
+        llm_override=llm_override,
+        available_sources=available_sources,
+    )
     result = graph.invoke(initial)
     return result
