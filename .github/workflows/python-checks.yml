@@ -1,14 +1,16 @@
-name: Python Checks
+name: CI — Enterprise Policy Compliance Auditor
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/agentic-rag-v4]
   pull_request:
     branches: [main]
 
 jobs:
-  checks:
+  test:
+    name: Python 3.11 — full offline test suite
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -18,32 +20,48 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-timeout
 
-      - name: Python syntax check
-        run: python -m py_compile app.py main.py database.py snowflake_logger.py
+      - name: Syntax check — application modules
+        run: |
+          python -m py_compile app.py main.py database.py snowflake_logger.py
+          python -m py_compile agent/__init__.py agent/graph.py agent/llm.py agent/state.py
+          echo "All syntax checks passed"
 
-      - name: Verify required files exist
+      - name: Verify required project files
         run: |
           for file in app.py main.py database.py requirements.txt README.md .env.example .gitignore; do
-            if [ ! -f "$file" ]; then
-              echo "MISSING: $file"
-              exit 1
-            fi
+            if [ ! -f "$file" ]; then echo "MISSING: $file"; exit 1; fi
             echo "OK: $file"
+          done
+          for dir in agent/ tests/ evaluation/; do
+            if [ ! -d "$dir" ]; then echo "MISSING dir: $dir"; exit 1; fi
+            echo "OK: $dir"
           done
 
       - name: Generate test PDF fixtures
         run: python tests/fixtures/make_fixtures.py
 
-      - name: Run pytest suite
+      - name: Run complete offline test suite
+        timeout-minutes: 20
         run: |
           set -o pipefail
-          pytest tests/ -v --tb=long -x 2>&1 | tee pytest-output.txt
+          pytest tests/ \
+            --timeout=300 \
+            -v --tb=long \
+            2>&1 | tee pytest-output.txt
         env:
           NVIDIA_API_KEY: ""
           SNOWFLAKE_ACCOUNT: ""

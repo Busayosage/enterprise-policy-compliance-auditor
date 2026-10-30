@@ -1,13 +1,13 @@
 {
   "stage": "4d",
-  "generated_at": "2026-10-29T23:46:26.882961+00:00",
+  "generated_at": "2026-10-30T00:04:34.581977+00:00",
   "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
   "fixture_pdfs": [
     "it_security_policy.pdf",
     "hr_leave_policy.pdf",
     "finance_expense_policy.pdf"
   ],
-  "indexing_elapsed_s": 2.49,
+  "indexing_elapsed_s": 3.27,
   "standard_rag": {
     "mode": "standard_rag",
     "k": 3,
@@ -56,7 +56,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0341,
+        "retrieval_elapsed_s": 0.0234,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -72,7 +72,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.025,
+        "retrieval_elapsed_s": 0.0294,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -88,7 +88,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.027,
+        "retrieval_elapsed_s": 0.0341,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -105,7 +105,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0263,
+        "retrieval_elapsed_s": 0.0293,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -122,7 +122,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.036,
+        "retrieval_elapsed_s": 0.0452,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -139,7 +139,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0111,
+        "retrieval_elapsed_s": 0.0874,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -156,7 +156,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0137,
+        "retrieval_elapsed_s": 0.0174,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -173,7 +173,7 @@
           "finance_expense_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0105,
+        "retrieval_elapsed_s": 0.0661,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -189,7 +189,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.023,
+        "retrieval_elapsed_s": 0.0724,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -206,7 +206,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0175,
+        "retrieval_elapsed_s": 0.0905,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -222,7 +222,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0151,
+        "retrieval_elapsed_s": 0.0505,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -238,7 +238,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0212,
+        "retrieval_elapsed_s": 0.0398,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -255,7 +255,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0201,
+        "retrieval_elapsed_s": 0.0169,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -272,7 +272,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0191,
+        "retrieval_elapsed_s": 0.0466,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -288,7 +288,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0152,
+        "retrieval_elapsed_s": 0.0244,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -305,7 +305,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0143,
+        "retrieval_elapsed_s": 0.0237,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -322,7 +322,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0149,
+        "retrieval_elapsed_s": 0.0531,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -338,7 +338,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0137,
+        "retrieval_elapsed_s": 0.1564,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -355,7 +355,7 @@
           "finance_expense_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0128,
+        "retrieval_elapsed_s": 0.0751,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -372,7 +372,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0161,
+        "retrieval_elapsed_s": 0.0365,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -388,7 +388,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0117,
+        "retrieval_elapsed_s": 0.0463,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -405,7 +405,7 @@
           "finance_expense_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0128,
+        "retrieval_elapsed_s": 0.0283,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -422,7 +422,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0191,
+        "retrieval_elapsed_s": 0.035,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -440,7 +440,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0136,
+        "retrieval_elapsed_s": 0.044,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -458,7 +458,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0206,
+        "retrieval_elapsed_s": 0.0288,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -474,7 +474,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0175,
+        "retrieval_elapsed_s": 0.0329,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -491,7 +491,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0157,
+        "retrieval_elapsed_s": 0.0476,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -508,7 +508,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.019,
+        "retrieval_elapsed_s": 0.0376,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -524,7 +524,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0259,
+        "retrieval_elapsed_s": 0.0198,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -541,7 +541,7 @@
           "finance_expense_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0178,
+        "retrieval_elapsed_s": 0.0293,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -558,7 +558,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0128,
+        "retrieval_elapsed_s": 0.0448,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -575,7 +575,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.018,
+        "retrieval_elapsed_s": 0.0368,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -592,7 +592,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0147,
+        "retrieval_elapsed_s": 0.064,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -608,7 +608,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.017,
+        "retrieval_elapsed_s": 0.0688,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -625,7 +625,7 @@
           "hr_leave_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0159,
+        "retrieval_elapsed_s": 0.3464,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -642,7 +642,7 @@
           "finance_expense_policy.pdf",
           "hr_leave_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0159,
+        "retrieval_elapsed_s": 0.0985,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -658,7 +658,7 @@
         "retrieved_files": [
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0166,
+        "retrieval_elapsed_s": 0.2571,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -675,7 +675,7 @@
           "finance_expense_policy.pdf",
           "it_security_policy.pdf"
         ],
-        "retrieval_elapsed_s": 0.0162,
+        "retrieval_elapsed_s": 0.0733,
         "n_docs": 3,
         "answer_type": "live_only",
         "note": "retrieval only \u2014 no live LLM call"
@@ -756,7 +756,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.067,
+        "retrieval_elapsed_s": 0.1402,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -777,7 +777,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0176,
+        "retrieval_elapsed_s": 0.0511,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -798,7 +798,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.024,
+        "retrieval_elapsed_s": 0.0574,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -820,7 +820,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0187,
+        "retrieval_elapsed_s": 0.0508,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -842,7 +842,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0193,
+        "retrieval_elapsed_s": 0.0339,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -864,7 +864,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0196,
+        "retrieval_elapsed_s": 0.034,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -886,7 +886,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0204,
+        "retrieval_elapsed_s": 0.0423,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -908,7 +908,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.021,
+        "retrieval_elapsed_s": 0.0413,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -929,7 +929,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0231,
+        "retrieval_elapsed_s": 0.0386,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -951,7 +951,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0227,
+        "retrieval_elapsed_s": 0.0389,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -972,7 +972,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0232,
+        "retrieval_elapsed_s": 0.0333,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -993,7 +993,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0213,
+        "retrieval_elapsed_s": 0.0363,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1015,7 +1015,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.023,
+        "retrieval_elapsed_s": 0.0265,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1037,7 +1037,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0218,
+        "retrieval_elapsed_s": 0.0428,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1058,7 +1058,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0206,
+        "retrieval_elapsed_s": 0.0562,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1080,7 +1080,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0208,
+        "retrieval_elapsed_s": 0.0368,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1102,7 +1102,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0194,
+        "retrieval_elapsed_s": 0.0355,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1123,7 +1123,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0216,
+        "retrieval_elapsed_s": 0.0434,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1145,7 +1145,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0163,
+        "retrieval_elapsed_s": 0.0341,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "CONFLICT_DETECTED",
@@ -1167,7 +1167,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0194,
+        "retrieval_elapsed_s": 0.0581,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "CONFLICT_DETECTED",
@@ -1188,7 +1188,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0167,
+        "retrieval_elapsed_s": 0.0563,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "NO_CONFLICT",
@@ -1210,7 +1210,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0189,
+        "retrieval_elapsed_s": 0.0471,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "CONFLICT_DETECTED",
@@ -1232,7 +1232,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0437,
+        "retrieval_elapsed_s": 0.2107,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1255,7 +1255,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0394,
+        "retrieval_elapsed_s": 0.0985,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1278,7 +1278,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0404,
+        "retrieval_elapsed_s": 0.1852,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1299,7 +1299,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0458,
+        "retrieval_elapsed_s": 0.1799,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1321,7 +1321,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0411,
+        "retrieval_elapsed_s": 0.1039,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1343,7 +1343,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0382,
+        "retrieval_elapsed_s": 0.1678,
         "answer_type": "refusal",
         "evidence_status": "INSUFFICIENT",
         "conflict_status": "",
@@ -1364,7 +1364,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0163,
+        "retrieval_elapsed_s": 0.0642,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1386,7 +1386,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0161,
+        "retrieval_elapsed_s": 0.1181,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1408,7 +1408,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0217,
+        "retrieval_elapsed_s": 0.0878,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1430,7 +1430,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0207,
+        "retrieval_elapsed_s": 0.0522,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1452,7 +1452,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0165,
+        "retrieval_elapsed_s": 0.0357,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1473,7 +1473,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0154,
+        "retrieval_elapsed_s": 0.0449,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1495,7 +1495,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0319,
+        "retrieval_elapsed_s": 0.0239,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1517,7 +1517,7 @@
           "hr_leave_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0296,
+        "retrieval_elapsed_s": 0.0294,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1538,7 +1538,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0206,
+        "retrieval_elapsed_s": 0.0342,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",
@@ -1560,7 +1560,7 @@
           "it_security_policy.pdf"
         ],
         "n_docs": 3,
-        "retrieval_elapsed_s": 0.0204,
+        "retrieval_elapsed_s": 0.0367,
         "answer_type": "grounded",
         "evidence_status": "SUPPORTED",
         "conflict_status": "",

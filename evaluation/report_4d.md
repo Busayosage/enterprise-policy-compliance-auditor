@@ -1,9 +1,9 @@
 # Stage 4d: Comparative Evaluation Report
 
-**Generated:** 2026-10-29T23:46:26.882961+00:00  
+**Generated:** 2026-10-30T00:04:34.581977+00:00  
 **Embedding model:** sentence-transformers/all-MiniLM-L6-v2  
 **Fixture PDFs:** it_security_policy.pdf, hr_leave_policy.pdf, finance_expense_policy.pdf  
-**Indexing time:** 2.49s  
+**Indexing time:** 3.27s  
 
 ## Evaluation Scope and Methodology
 
