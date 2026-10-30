@@ -4,6 +4,10 @@ langchain-core==1.4.8
 langchain-nvidia-ai-endpoints==1.4.1
 langchain-community==0.4.2
 langchain-text-splitters==1.1.2
+langgraph==1.2.18
+langgraph-checkpoint==4.3.1
+langgraph-prebuilt==1.1.1
+langgraph-sdk==0.4.10
 chromadb==1.5.9
 pypdf==6.13.3
 python-dotenv==1.2.2

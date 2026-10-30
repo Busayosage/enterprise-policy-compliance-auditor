@@ -1,5 +1,6 @@
 .env
 venv/
+venv311/
 venv_test/
 venv_validate/
 __pycache__/

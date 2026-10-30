@@ -14,8 +14,8 @@ import pytest
 from typing import Optional
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from evaluation_dataset import EVALUATION_QUESTIONS, CATEGORIES
@@ -35,11 +35,8 @@ def _fixture_path(name: str) -> str:
 # ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
-def all_docs_store(tmp_path_factory):
-    """Build a persistent-for-this-session Chroma store with all three fixtures."""
-    chroma_dir = str(tmp_path_factory.mktemp("eval_chroma"))
-    temp_dir = str(tmp_path_factory.mktemp("eval_temp"))
-
+def all_docs_store():
+    """Build an in-memory vector store with all three fixtures."""
     pdf_names = [
         "it_security_policy.pdf",
         "hr_leave_policy.pdf",
@@ -58,16 +55,10 @@ def all_docs_store(tmp_path_factory):
     chunks = splitter.split_documents(all_chunks)
 
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vs = Chroma.from_documents(documents=chunks, embedding=embeddings,
-                               persist_directory=chroma_dir, collection_name="policy_docs")
-
+    vs = InMemoryVectorStore(embedding=embeddings)
+    vs.add_documents(chunks)
     retriever = vs.as_retriever(search_kwargs={"k": TOP_K})
     yield retriever
-
-    import gc
-    gc.collect()
-    shutil.rmtree(chroma_dir, ignore_errors=True)
-    shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 # ---------------------------------------------------------------------------
