@@ -168,11 +168,19 @@ def build_agent_context(docs: list) -> str:
 
 
 def validate_answer_citations(answer: str, valid_filenames: set, docs: list = None) -> tuple:
-    """Strip PDF citations that cannot be verified against the retrieved document set.
+    """Strip PDF citations whose filename or page cannot be matched in the retrieved set.
 
     Returns (cleaned_answer, warnings) where:
-    - cleaned_answer has unsupported citations physically removed from the text.
+    - cleaned_answer has unmatched citations physically removed from the text.
     - warnings lists each removed citation for audit purposes.
+
+    Validation scope — metadata only:
+      This function verifies that cited filenames exist in the retrieved document
+      set and that cited page numbers match a retrieved chunk for that file.  It
+      does NOT verify that the cited passage entails the generated claim, nor that
+      the answer is factually accurate.  Passing validation means the citation
+      refers to a document that was actually retrieved; it is not a guarantee of
+      factual support.
 
     Validation layers (applied in order, strictest-first):
     1. Filename: must appear in valid_filenames — else strip.

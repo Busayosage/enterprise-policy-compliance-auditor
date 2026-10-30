@@ -1,9 +1,9 @@
 """
-Stage 4d â€” Comparative evaluation regression tests.
+Stage 4d â€" Comparative evaluation regression tests.
 
 All tests are offline (no live NVIDIA, Snowflake or ChromaDB calls in the
 standard path). Session-scoped retrieval tests use the fixture PDFs and
-a real HuggingFace embedding model â€” the same corpus used in
+a real HuggingFace embedding model â€" the same corpus used in
 test_rag_evaluation.py.
 
 Test sections:
@@ -62,7 +62,7 @@ NON_REFUSAL = [q for q in EVALUATION_QUESTIONS if not q["should_refuse"]]
 REFUSAL_QS  = [q for q in EVALUATION_QUESTIONS if q["should_refuse"]]
 CROSS_DOC_QS = [q for q in EVALUATION_QUESTIONS if q["category"] == "cross_document"]
 
-# â”€â”€â”€ Session-scoped fixture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€ Session-scoped fixture â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 @pytest.fixture(scope="session")
 def shared_retriever():
@@ -94,7 +94,7 @@ def compiled_graph():
     return build_graph()
 
 
-# â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 AVAILABLE_SOURCES = [
     "it_security_policy.pdf",
@@ -657,14 +657,14 @@ class TestAgenticBehaviourDifferences:
     def test_standard_rag_overhead_is_1_llm_call(self):
         """
         Standard RAG uses exactly 1 LLM call per question.
-        (Verify the architecture difference â€” not a live call.)
+        (Verify the architecture difference â€" not a live call.)
         """
         # Standard RAG: prompt | llm â†’ 1 call
         # This test verifies the contract by inspecting main.ask_question code path
         import inspect
         import main as _main
         src = inspect.getsource(_main.ask_question)
-        # The chain is: chain.invoke(...) â€” one LLM call
+        # The chain is: chain.invoke(...) â€" one LLM call
         assert "chain.invoke" in src
         # No loop, no retry
         assert "retry" not in src.lower()
@@ -862,11 +862,66 @@ class TestDifficultScenarios:
         import database as _db
         src = inspect.getsource(_db.index_documents)
         # Production path is chroma_db/
-        # Tests must pass an explicit directory â€” verify index_documents accepts a parameter
+        # Tests must pass an explicit directory â€" verify index_documents accepts a parameter
         sig = inspect.signature(_db.index_documents)
-        # index_documents takes uploaded_files â€” it reads CHROMA_DIR from env/default
+        # index_documents takes uploaded_files â€" it reads CHROMA_DIR from env/default
         # The contract: tests use tmp_chroma_dir fixture, never write to chroma_db/
         assert "chroma_db" in _db.__file__ or "database.py" in _db.__file__  # just import check
+
+    def test_grounded_answer_includes_citation_metadata_notice(self, compiled_graph):
+        """Regression: grounded answers must include the citation metadata-only notice.
+
+        Citation validation confirms filename and page metadata; it does NOT confirm
+        claim-level factual accuracy.  The answer text must include the notice so users
+        are not misled into treating metadata validity as factual verification.
+        """
+        doc = Document(
+            page_content="Employees must use AES-256 encryption for Restricted data.",
+            metadata={"source_filename": "it_security_policy.pdf", "page": 0},
+        )
+        mock_llm = MagicMock()
+        structured = MagicMock()
+        call_count = [0]
+
+        def _call(messages):
+            idx = call_count[0]
+            call_count[0] += 1
+            if idx == 0:
+                return ClassificationOutput(
+                    category="direct_factual",
+                    intent="encryption standard",
+                    requires_cross_doc=False,
+                )
+            else:
+                return EvidenceEvaluation(
+                    status=_STATUS_SUPPORTED,
+                    coverage_estimate=0.85,
+                    supporting_passages=[],
+                    reasoning="Supported by retrieved text.",
+                )
+
+        structured.side_effect = _call
+        structured.invoke.side_effect = _call
+        mock_llm.with_structured_output.return_value = structured
+        mock_llm.side_effect = lambda m: MagicMock(
+            content="AES-256 encryption is required [it_security_policy.pdf, Page 1]."
+        )
+
+        state = make_initial_state(
+            "What encryption standard is required?",
+            retriever=_stub_retriever([doc]),
+            llm_override=mock_llm,
+            available_sources=AVAILABLE_SOURCES,
+        )
+        final = compiled_graph.invoke(state)
+        assert final.get("answer_type") == "grounded", (
+            f"Expected grounded, got {final.get('answer_type')!r}"
+        )
+        answer = final.get("answer", "")
+        assert "metadata" in answer.lower() or "AI" in answer or "human review" in answer.lower(), (
+            "grounded answer must include citation metadata-only notice; "
+            f"got: {answer!r}"
+        )
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -913,6 +968,23 @@ class TestCitationValidation:
         cleaned, warnings = validate_answer_citations(answer, self.VALID_FILENAMES, self.DOCS)
         assert len(warnings) == 0
         assert cleaned == answer
+
+    def test_validate_answer_citations_is_metadata_only(self):
+        """Regression: validate_answer_citations checks filename/page metadata only.
+
+        A citation that passes validation (correct filename + page) may still accompany
+        a claim not entailed by that passage.  This test documents the scope boundary:
+        passing validation means the citation refers to a retrieved document page; it is
+        NOT proof that the answer text is factually supported by that passage.
+        """
+        # Cited page exists (Page 1 == stored 0-indexed page 0).
+        # The claim "MFA is mandatory for VPN" is not in the cited passage text
+        # ("MFA is required for all remote access."), yet validation still passes
+        # because filename and page metadata match.
+        answer = "MFA is mandatory for VPN access [it_security_policy.pdf, Page 1]."
+        cleaned, warnings = validate_answer_citations(answer, self.VALID_FILENAMES, self.DOCS)
+        assert len(warnings) == 0, "Metadata-valid citation must not be stripped"
+        assert "[it_security_policy.pdf, Page 1]" in cleaned
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -1130,7 +1202,7 @@ class TestLiveInferenceBoundary:
         prod_dir = os.path.join(PROJECT_ROOT, "chroma_db")
         # Record mtime before (or note it doesn't exist)
         mtime_before = os.path.getmtime(prod_dir) if os.path.exists(prod_dir) else None
-        # Tests use shared_retriever fixture with tmp_path â€” no production write occurs
+        # Tests use shared_retriever fixture with tmp_path â€" no production write occurs
         # This test simply confirms the directory wasn't touched in THIS run
         if mtime_before is not None:
             mtime_after = os.path.getmtime(prod_dir)

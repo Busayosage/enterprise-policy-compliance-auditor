@@ -481,6 +481,29 @@ class TestSpecialAnswerStates:
         _, level = _ANSWER_TYPE_LABELS["partial_grounded"]
         assert level != "success"
 
+    def test_grounded_label_does_not_claim_independent_verification(self):
+        """Regression: grounded label must not say 'Verified' — AI assessment ≠ verification."""
+        from app import _ANSWER_TYPE_LABELS
+        label, _ = _ANSWER_TYPE_LABELS["grounded"]
+        assert "Verified Answer" not in label, (
+            "Label must not claim independent verification; use 'Evidence-supported (AI-assessed)'"
+        )
+        assert "AI-assessed" in label or "AI assessed" in label.lower() or "supported" in label.lower()
+
+    def test_partial_grounded_label_does_not_claim_independent_verification(self):
+        """Regression: partial_grounded label must not say 'Partially Verified'."""
+        from app import _ANSWER_TYPE_LABELS
+        label, _ = _ANSWER_TYPE_LABELS["partial_grounded"]
+        assert "Partially Verified Answer" not in label, (
+            "Label must not claim partial verification; use 'Partially supported (AI-assessed)'"
+        )
+
+    def test_grounded_answer_renders_info_notice(self):
+        """Regression: grounded answers must display an informational AI-assessment notice."""
+        at = self._run_state(answer_type="grounded", evidence_status="SUPPORTED")
+        assert not at.exception
+        assert len(at.info) >= 1, "grounded answer must show an info notice about AI-assessed limitation"
+
 
 # ─── Section H: Snowflake failure isolation ───────────────────────────────────
 

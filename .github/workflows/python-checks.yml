@@ -73,7 +73,7 @@ jobs:
 
       - name: Verify test collection
         run: |
-          pytest tests/ --collect-only -q 2>&1 | tee collection-output.txt || true
+          pytest tests/ --collect-only -q 2>&1 | tee collection-output.txt
           echo "--- Collection output (last 50 lines) ---"
           tail -50 collection-output.txt
 
@@ -84,7 +84,6 @@ jobs:
           pytest tests/ \
             --timeout=300 \
             -v --tb=long \
-            --continue-on-collection-errors \
             --junitxml=test-results.xml \
             2>&1 | tee pytest-output.txt
         env:

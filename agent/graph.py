@@ -99,6 +99,11 @@ _CITATION_STRIPPED_NOTICE = (
     "not be verified against the retrieved policy content. Treat source attribution "
     "in this answer as unverified.]"
 )
+_CITATION_METADATA_NOTICE = (
+    "\n\n*Note: Citations verified by filename and page metadata only. "
+    "AI evidence assessment does not independently confirm factual accuracy — "
+    "human review is required before acting on compliance conclusions.*"
+)
 
 # Stage 4b evidence status values (used in evidence_status field)
 _STATUS_SUPPORTED = "SUPPORTED"
@@ -769,6 +774,8 @@ def generate_grounded_answer(state: AgentState) -> dict:
             answer_text += _PARTIAL_ANSWER_NOTICE
         else:
             final_type = "grounded"
+            # Citation validation checks filename/page metadata, not claim entailment.
+            answer_text += _CITATION_METADATA_NOTICE
 
         # Append conflict / uncertainty notice.
         conflict_status = state.get("conflict_status", "")

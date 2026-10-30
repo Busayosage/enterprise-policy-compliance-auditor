@@ -236,8 +236,8 @@ if st.session_state.get("answer") and "agent_result" not in st.session_state:
 # Display — Agentic results
 # ═══════════════════════════════════════════════════════════════════════════════
 _ANSWER_TYPE_LABELS = {
-    "grounded":           ("Verified Answer", "success"),
-    "partial_grounded":   ("Partially Verified Answer", "warning"),
+    "grounded":           ("Evidence-supported (AI-assessed)", "success"),
+    "partial_grounded":   ("Partially supported (AI-assessed)", "warning"),
     "unverified_grounded":("Answer — Verification Incomplete", "warning"),
     "excerpt_fallback":   ("Answer from Policy Excerpts (unverified)", "warning"),
     "refusal":            ("Insufficient Evidence", "error"),
@@ -303,10 +303,17 @@ if st.session_state.get("agent_result"):
         st.info("No answer was generated.")
 
     # ── Human review notice ──────────────────────────────────────────────────
-    if answer_type in ("partial_grounded", "unverified_grounded", "excerpt_fallback"):
+    if answer_type == "grounded":
+        st.info(
+            "AI evidence assessment confirms the retrieved policy text addresses "
+            "this question. Citation metadata (filename and page) has been validated. "
+            "**AI assessment does not independently verify factual accuracy** — "
+            "all compliance conclusions require human review."
+        )
+    elif answer_type in ("partial_grounded", "unverified_grounded", "excerpt_fallback"):
         st.warning(
             "This answer is not fully verified against retrieved policy evidence. "
-            "Human review is recommended before acting on this conclusion."
+            "Human review is required before acting on this conclusion."
         )
     elif answer_type == "refusal":
         st.error(
