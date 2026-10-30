@@ -71,13 +71,20 @@ jobs:
       - name: Generate test PDF fixtures
         run: python tests/fixtures/make_fixtures.py
 
+      - name: Verify test collection
+        run: |
+          pytest tests/ --collect-only -q 2>&1 | tee collection-output.txt || true
+          echo "--- Collection output (last 50 lines) ---"
+          tail -50 collection-output.txt
+
       - name: Run complete offline test suite
         timeout-minutes: 20
         run: |
           set -o pipefail
           pytest tests/ \
             --timeout=300 \
-            -v --tb=long -x \
+            -v --tb=long \
+            --continue-on-collection-errors \
             2>&1 | tee pytest-output.txt
         env:
           NVIDIA_API_KEY: ""
@@ -89,10 +96,12 @@ jobs:
           SNOWFLAKE_SCHEMA: ""
           SNOWFLAKE_ROLE: ""
 
-      - name: Upload pytest output on failure
+      - name: Upload test output on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: pytest-output
-          path: pytest-output.txt
+          path: |
+            pytest-output.txt
+            collection-output.txt
           retention-days: 7
