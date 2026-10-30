@@ -85,7 +85,16 @@ jobs:
             --timeout=300 \
             -v --tb=long \
             --continue-on-collection-errors \
+            --junitxml=test-results.xml \
             2>&1 | tee pytest-output.txt
+
+      - name: Show failed tests
+        if: always()
+        run: |
+          echo "=== FAILED TESTS ==="
+          grep -E "^FAILED|^ERROR" pytest-output.txt || echo "(no FAILED lines found)"
+          echo "=== SUMMARY ==="
+          tail -20 pytest-output.txt
         env:
           NVIDIA_API_KEY: ""
           SNOWFLAKE_ACCOUNT: ""
@@ -104,4 +113,5 @@ jobs:
           path: |
             pytest-output.txt
             collection-output.txt
+            test-results.xml
           retention-days: 7
