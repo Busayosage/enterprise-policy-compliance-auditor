@@ -87,14 +87,6 @@ jobs:
             --continue-on-collection-errors \
             --junitxml=test-results.xml \
             2>&1 | tee pytest-output.txt
-
-      - name: Show failed tests
-        if: always()
-        run: |
-          echo "=== FAILED TESTS ==="
-          grep -E "^FAILED|^ERROR" pytest-output.txt || echo "(no FAILED lines found)"
-          echo "=== SUMMARY ==="
-          tail -20 pytest-output.txt
         env:
           NVIDIA_API_KEY: ""
           SNOWFLAKE_ACCOUNT: ""
@@ -104,6 +96,20 @@ jobs:
           SNOWFLAKE_DATABASE: ""
           SNOWFLAKE_SCHEMA: ""
           SNOWFLAKE_ROLE: ""
+
+      - name: Annotate failed tests
+        if: always()
+        run: |
+          if [ -f pytest-output.txt ]; then
+            echo "=== FAILED TESTS ==="
+            grep -E "^FAILED|^ERROR" pytest-output.txt | while IFS= read -r line; do
+              echo "::error::$line"
+            done || echo "::notice::(no FAILED lines found)"
+            echo "=== SUMMARY ==="
+            tail -20 pytest-output.txt
+          else
+            echo "::warning::pytest-output.txt not found"
+          fi
 
       - name: Upload test output on failure
         if: failure()
