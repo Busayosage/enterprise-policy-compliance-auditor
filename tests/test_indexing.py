@@ -401,7 +401,8 @@ class TestVersionedIndexSafety:
                         collection_name=database._COLLECTION_NAME)
             all_docs = vs.get(include=["metadatas"])
             found = {m.get("source_filename") for m in all_docs["metadatas"]}
-            vs._client.close()
+            if hasattr(vs, '_client') and hasattr(vs._client, 'close'):
+                vs._client.close()
             del vs
             gc.collect()
 
