@@ -269,11 +269,13 @@ class TestAgenticResultsRendering:
     def _run_agentic(self, state=None, question="What does IT policy say about MFA?"):
         state = state or _agent_state()
         at = _fresh()
+        _fake_getenv = lambda k, *a: "fake-key" if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
-                at.chat_input[0].set_value(question).run(timeout=TIMEOUT)
+                with patch("os.getenv", side_effect=_fake_getenv):
+                    at.chat_input[0].set_value(question).run(timeout=TIMEOUT)
         return at
 
     def test_agentic_grounded_no_crash(self):
@@ -331,11 +333,13 @@ class TestEvidenceStatusBadges:
     def _run_ev(self, evidence_status, answer_type="grounded"):
         state = _agent_state(evidence_status=evidence_status, answer_type=answer_type)
         at = _fresh()
+        _fake_getenv = lambda k, *a: "fake-key" if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
-                at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
+                with patch("os.getenv", side_effect=_fake_getenv):
+                    at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
         return at
 
     def test_supported(self):
@@ -363,11 +367,13 @@ class TestConflictRendering:
     def _run_conflict(self, conflict_status, conflicts=None):
         state = _agent_state(conflict_status=conflict_status, conflicts=conflicts or [])
         at = _fresh()
+        _fake_getenv = lambda k, *a: "fake-key" if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
-                at.chat_input[0].set_value("Cross-doc question").run(timeout=TIMEOUT)
+                with patch("os.getenv", side_effect=_fake_getenv):
+                    at.chat_input[0].set_value("Cross-doc question").run(timeout=TIMEOUT)
         return at
 
     def test_conflict_detected(self):
@@ -406,11 +412,13 @@ class TestSpecialAnswerStates:
     def _run_state(self, **kwargs):
         state = _agent_state(**kwargs)
         at = _fresh()
+        _fake_getenv = lambda k, *a: "fake-key" if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
-                at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
+                with patch("os.getenv", side_effect=_fake_getenv):
+                    at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
         return at
 
     def test_refusal_renders(self):
@@ -508,6 +516,7 @@ class TestSnowflakeFailureIsolation:
     def test_snowflake_warning_shown_on_log_failure(self):
         at = _fresh()
         mock_doc = _doc()
+        _fake_getenv = lambda k, *a: "fake-key" if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
         with patch("snowflake_logger.is_snowflake_configured", return_value=True):
             with patch("snowflake_logger.create_logs_table_if_not_exists",
                        return_value=(True, "ok")):
@@ -515,8 +524,9 @@ class TestSnowflakeFailureIsolation:
                            return_value=("MFA is required.", [mock_doc], 1.1)):
                     with patch("snowflake_logger.log_query_to_snowflake",
                                return_value=(False, "Snowflake logging failed: timeout")):
-                        at.run(timeout=TIMEOUT)
-                        at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
+                        with patch("os.getenv", side_effect=_fake_getenv):
+                            at.run(timeout=TIMEOUT)
+                            at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
         assert not at.exception
         # A Snowflake warning must be surfaced to the user
         assert len(at.warning) >= 1
