@@ -47,8 +47,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
-CHROMA_DB_DIR = "chroma_db"
-TEMP_DIR = "temp"
+CHROMA_DB_DIR = os.environ.get("CHROMA_DB_PATH", "chroma_db")
+TEMP_DIR = os.environ.get("CHROMA_TEMP_PATH", "temp")
 _COLLECTION_NAME = "policy_docs"
 _POINTER_FILE = os.path.join(CHROMA_DB_DIR, "index.json")
 _SLOTS = ("a", "b")
@@ -318,6 +318,63 @@ def _is_legacy_index(chroma_dir: str) -> bool:
     return os.path.exists(sqlite_path)
 
 
+def _detect_legacy_collection_name(chroma_dir: str) -> str:
+    """Return the collection name that actually contains embeddings in a legacy index.
+
+    Probes the SQLite database read-only (no ChromaDB client, no collection
+    creation).  Resolution order:
+      1. _COLLECTION_NAME ("policy_docs") if it has embeddings — legacy index
+         was already built with the current name.
+      2. "langchain" if it has embeddings — index was built by an earlier version
+         that used LangChain's default collection name.
+      3. Any other collection that has embeddings (alphabetically first).
+      4. _COLLECTION_NAME as a safe fallback when nothing is found.
+
+    Never writes to the database.  Returns _COLLECTION_NAME unchanged for any
+    error, preserving the existing behaviour.
+    """
+    import sqlite3 as _sqlite3
+
+    sqlite_path = os.path.join(chroma_dir, "chroma.sqlite3")
+    try:
+        # Read-only URI: prevents any implicit writes.
+        con = _sqlite3.connect(f"file:{sqlite_path}?mode=ro", uri=True)
+        cur = con.cursor()
+
+        # Fetch all (collection_name, embedding_count) pairs via the
+        # segments table, which links segment_id → collection_id.
+        cur.execute("""
+            SELECT c.name, COUNT(e.id) as cnt
+            FROM collections c
+            JOIN segments s ON s.collection = c.id
+            JOIN embeddings e ON e.segment_id = s.id
+            WHERE s.scope = 'METADATA'
+            GROUP BY c.name
+        """)
+        rows = cur.fetchall()
+        con.close()
+    except Exception:
+        return _COLLECTION_NAME
+
+    if not rows:
+        return _COLLECTION_NAME
+
+    counts = {name: cnt for name, cnt in rows if cnt > 0}
+    if not counts:
+        return _COLLECTION_NAME
+
+    # Prefer the current default name if it has data.
+    if counts.get(_COLLECTION_NAME, 0) > 0:
+        return _COLLECTION_NAME
+
+    # Fall back to "langchain" (LangChain's historical default).
+    if counts.get("langchain", 0) > 0:
+        return "langchain"
+
+    # Any other non-empty collection.
+    return sorted(counts, key=lambda n: -counts[n])[0]
+
+
 def load_retriever(k: int = 3, chroma_dir: str = CHROMA_DB_DIR):
     """Return a retriever backed by the current active slot.
 
@@ -326,15 +383,21 @@ def load_retriever(k: int = 3, chroma_dir: str = CHROMA_DB_DIR):
     legacy directory is served read-only.  The first call to index_documents()
     will migrate to the versioned layout; until then existing data is preserved.
 
+    For legacy indexes the collection name is auto-detected: if the preferred
+    _COLLECTION_NAME ("policy_docs") is empty but "langchain" holds the data
+    (as built by earlier LangChain versions), "langchain" is used transparently.
+
     Reads index.json on every call so a concurrent index swap is picked up
     immediately for the next query.
     """
     if _is_legacy_index(chroma_dir):
+        # Detect which collection holds the data without creating empty ones.
+        legacy_coll = _detect_legacy_collection_name(chroma_dir)
         # Serve the legacy flat index read-only without modifying it.
         vectorstore = Chroma(
             persist_directory=chroma_dir,
             embedding_function=get_embeddings(),
-            collection_name=_COLLECTION_NAME,
+            collection_name=legacy_coll,
         )
         return vectorstore.as_retriever(search_kwargs={"k": k})
 

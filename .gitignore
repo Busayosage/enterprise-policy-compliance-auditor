@@ -5,5 +5,8 @@ venv_test/
 venv_validate/
 __pycache__/
 chroma_db/
+chroma_db_demo/
+chroma_db_conflict_demo/
 temp/
+temp_demo/
 *.pyc

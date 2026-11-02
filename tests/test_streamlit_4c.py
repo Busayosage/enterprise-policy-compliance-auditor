@@ -409,14 +409,37 @@ class TestNoLiveAPICalls:
         assert result is mock_llm
         nvidia_cls.assert_not_called()
 
+    def test_get_llm_does_not_pass_timeout_in_request_body(self):
+        """timeout must not appear in ChatNVIDIA kwargs — it would be forwarded
+        into the NVIDIA request body and cause a 400 Unsupported parameter error."""
+        with patch.dict(os.environ, {"NVIDIA_API_KEY": "test-key"}, clear=False):
+            with patch("main.ChatNVIDIA") as mock_nvidia:
+                mock_nvidia.return_value = MagicMock()
+                from main import get_llm
+                get_llm()
+                _, kwargs = mock_nvidia.call_args
+                pos_args = mock_nvidia.call_args.args[0] if mock_nvidia.call_args.args else {}
+                all_kwargs = {**pos_args, **kwargs}
+                assert "timeout" not in all_kwargs, (
+                    "timeout must not be passed to ChatNVIDIA — it ends up in the "
+                    "NVIDIA request body and causes a 400 error"
+                )
+                model_kw = all_kwargs.get("model_kwargs", {})
+                assert "timeout" not in model_kw, (
+                    "timeout must not be in model_kwargs — NVIDIA rejects it with 400"
+                )
+                assert model_kw.get("chat_template_kwargs") == {"enable_thinking": False}, (
+                    "enable_thinking=False must be preserved in model_kwargs"
+                )
+
     def test_snowflake_not_called_when_not_configured(self):
-        from snowflake_logger import is_snowflake_configured, log_query_to_snowflake
+        import snowflake_logger as _sl
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             with patch("snowflake_logger._get_connection") as mock_conn:
-                # Simulate the app's guard: only call log if snowflake_enabled
-                snowflake_enabled = is_snowflake_configured()
+                # Call through the module reference so the patch is picked up
+                snowflake_enabled = _sl.is_snowflake_configured()
                 if snowflake_enabled:
-                    log_query_to_snowflake(
+                    _sl.log_query_to_snowflake(
                         document_names="", user_question="", ai_answer="",
                         source_filenames="", source_pages="", evidence_found=False
                     )

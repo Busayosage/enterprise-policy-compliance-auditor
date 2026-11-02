@@ -45,7 +45,7 @@ ChromaDB similarity search (k=3 chunks)
 Build context string (whole chunks, max 8 000 chars)
      │
      ▼
-NVIDIA NIM — meta/llama-3.1-70b-instruct
+NVIDIA NIM — nvidia/nemotron-3.5-super-vl-120b-a12b
      │
      ▼
 Grounded answer + source citations
@@ -126,7 +126,7 @@ Phase 4 adds the LangGraph agentic pipeline alongside the existing Standard RAG 
 | LLM orchestration | LangChain 1.3.10 |
 | Vector database | ChromaDB 1.5.9 |
 | Embeddings | sentence-transformers/all-MiniLM-L6-v2 |
-| LLM | NVIDIA NIM — meta/llama-3.1-70b-instruct |
+| LLM | NVIDIA NIM — nvidia/nemotron-3.5-super-vl-120b-a12b |
 | PDF parsing | PyPDF 6.13.3 |
 | Audit logging (optional) | Snowflake |
 | Environment | python-dotenv |

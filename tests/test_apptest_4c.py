@@ -60,7 +60,13 @@ def _apptest_stubs():
     Isolating these stubs in a fixture (rather than at module-import time)
     prevents them from polluting test_comparative_4d.py's real ChromaDB
     imports, which are collected later in the same pytest process.
+
+    Also runs gc.collect() before injecting stubs so that HuggingFace/ChromaDB
+    objects held by earlier test modules (e.g. test_agent_4b) are released,
+    reducing peak memory and preventing AppTest timeouts under memory pressure.
     """
+    import gc
+    gc.collect()
     saved = {n: sys.modules.get(n) for n in _APPTEST_STUB_NAMES}
     for n in _APPTEST_STUB_NAMES:
         if n not in sys.modules:
@@ -71,12 +77,13 @@ def _apptest_stubs():
             sys.modules.pop(n, None)
         else:
             sys.modules[n] = orig
+    gc.collect()
 
 
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 APP_PATH = os.path.join(PROJECT_ROOT, "app.py")
-TIMEOUT = 30
+TIMEOUT = 60  # raised from 30 — needs headroom when run after heavy ML test modules
 
 
 # ─── helpers ──────────────────────────────────────────────────────────────────
@@ -156,6 +163,16 @@ def _fresh() -> AppTest:
     return AppTest.from_file(APP_PATH)
 
 
+def _submit_question(at: AppTest, question: str, timeout: int = TIMEOUT):
+    """Set the text area value, re-render to enable the button, then click Analyse.
+
+    The Analyse button is disabled when the text area is empty, so we need one
+    intermediate run() after setting the text before we can click it.
+    """
+    at.text_area[0].set_value(question).run(timeout=timeout)
+    at.button(key="btn_analyse").click().run(timeout=timeout)
+
+
 # ─── Section A: Application startup ──────────────────────────────────────────
 
 class TestAppStartup:
@@ -187,12 +204,15 @@ class TestAppStartup:
         assert not at.exception
         assert "Standard RAG" in str(at.radio[0].value)
 
-    def test_chat_input_is_present(self):
+    def test_textarea_and_analyse_button_present(self):
+        """Phase 5A: chat_input replaced by text_area + Analyse button."""
         at = _fresh()
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
         assert not at.exception
-        assert len(at.chat_input) >= 1
+        assert len(at.text_area) >= 1
+        analyse_btns = [b for b in at.button if "Analyse" in str(b.label)]
+        assert len(analyse_btns) >= 1, "Analyse button not found"
 
     def test_sidebar_has_configuration_header(self):
         at = _fresh()
@@ -210,7 +230,7 @@ class TestStandardRAGMode:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             with patch("main.ask_question", return_value=("MFA is required.", [mock_doc], 1.2)):
                 at.run(timeout=TIMEOUT)
-                at.chat_input[0].set_value("Does IT policy require MFA?").run(timeout=TIMEOUT)
+                _submit_question(at, "Does IT policy require MFA?")
         assert not at.exception
 
     def test_standard_rag_no_retriever_no_crash(self):
@@ -220,7 +240,7 @@ class TestStandardRAGMode:
                 "No indexed documents found. Please upload and index policy PDFs first.", [], 0.0
             )):
                 at.run(timeout=TIMEOUT)
-                at.chat_input[0].set_value("Any question").run(timeout=TIMEOUT)
+                _submit_question(at, "Any question")
         assert not at.exception
 
     def test_standard_rag_answer_text_appears(self):
@@ -229,7 +249,7 @@ class TestStandardRAGMode:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             with patch("main.ask_question", return_value=("MFA is required.", [mock_doc], 1.2)):
                 at.run(timeout=TIMEOUT)
-                at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
+                _submit_question(at, "MFA question")
         assert not at.exception
         all_text = " ".join(str(e) for e in at.get("write") + at.get("markdown"))
         assert "MFA" in all_text or True  # non-crash is the hard invariant
@@ -238,10 +258,8 @@ class TestStandardRAGMode:
         at = _fresh()
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             with patch.dict(os.environ, {"NVIDIA_API_KEY": ""}, clear=False):
-                # Ensure os.getenv("NVIDIA_API_KEY") returns ""
                 at.run(timeout=TIMEOUT)
-                # Submitting a query with no key should show an error widget, not crash
-                at.chat_input[0].set_value("test question").run(timeout=TIMEOUT)
+                _submit_question(at, "test question")
         assert not at.exception
 
 
@@ -273,9 +291,10 @@ class TestAgenticResultsRendering:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
+            at.text_area[0].set_value(question).run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
                 with patch("os.getenv", side_effect=_fake_getenv):
-                    at.chat_input[0].set_value(question).run(timeout=TIMEOUT)
+                    at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         return at
 
     def test_agentic_grounded_no_crash(self):
@@ -316,8 +335,10 @@ class TestAgenticResultsRendering:
     def test_agentic_subheader_present(self):
         at = self._run_agentic()
         assert not at.exception
+        # Phase 5A: headings may be rendered as markdown rather than st.subheader
         subheaders = [str(s) for s in at.get("subheader")]
-        assert len(subheaders) > 0
+        markdowns = [e.value for e in at.get("markdown")]
+        assert len(subheaders) > 0 or len(markdowns) > 0, "No headings or markdown rendered"
 
     def test_compliance_disclaimer_markdown_present(self):
         at = self._run_agentic()
@@ -337,9 +358,10 @@ class TestEvidenceStatusBadges:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
+            at.text_area[0].set_value("Question").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
                 with patch("os.getenv", side_effect=_fake_getenv):
-                    at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
+                    at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         return at
 
     def test_supported(self):
@@ -371,9 +393,10 @@ class TestConflictRendering:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
+            at.text_area[0].set_value("Cross-doc question").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
                 with patch("os.getenv", side_effect=_fake_getenv):
-                    at.chat_input[0].set_value("Cross-doc question").run(timeout=TIMEOUT)
+                    at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         return at
 
     def test_conflict_detected(self):
@@ -382,8 +405,12 @@ class TestConflictRendering:
             ["IT policy: 90-day rotation. HR policy: 180 days."]
         )
         assert not at.exception
-        # Warnings section should contain the conflict alert
-        assert len(at.warning) >= 1
+        # Phase 5A: conflicts render as rich HTML cards via st.markdown (not st.warning).
+        # Verify that conflict content appears in the rendered markdown output.
+        all_md = " ".join(e.value for e in at.get("markdown"))
+        assert "conflict" in all_md.lower() or "review" in all_md.lower(), (
+            "Conflict detection must surface a visible indicator in the UI"
+        )
 
     def test_no_conflict(self):
         assert not self._run_conflict("NO_CONFLICT").exception
@@ -391,8 +418,8 @@ class TestConflictRendering:
     def test_unknown_conflict(self):
         at = self._run_conflict("UNKNOWN")
         assert not at.exception
-        # Info widget should be present for UNKNOWN
-        assert len(at.info) >= 0  # soft check — non-crash is the requirement
+        # UNKNOWN → st.warning with a manual review recommendation
+        assert len(at.warning) >= 1
 
     def test_multiple_conflicts(self):
         at = self._run_conflict(
@@ -403,7 +430,10 @@ class TestConflictRendering:
             ]
         )
         assert not at.exception
-        assert len(at.warning) >= 1
+        all_md = " ".join(e.value for e in at.get("markdown"))
+        assert "conflict" in all_md.lower() or "review" in all_md.lower(), (
+            "Multiple conflicts must surface visible indicators in the UI"
+        )
 
 
 # ─── Section G: Refusal, partial, unverified, error states ───────────────────
@@ -416,9 +446,10 @@ class TestSpecialAnswerStates:
         with patch("snowflake_logger.is_snowflake_configured", return_value=False):
             at.run(timeout=TIMEOUT)
             at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
+            at.text_area[0].set_value("Question").run(timeout=TIMEOUT)
             with patch("agent.run_agent", return_value=state):
                 with patch("os.getenv", side_effect=_fake_getenv):
-                    at.chat_input[0].set_value("Question").run(timeout=TIMEOUT)
+                    at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         return at
 
     def test_refusal_renders(self):
@@ -519,7 +550,7 @@ class TestSnowflakeFailureIsolation:
                     with patch("snowflake_logger.log_query_to_snowflake",
                                return_value=(False, "Snowflake logging failed")):
                         at.run(timeout=TIMEOUT)
-                        at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
+                        _submit_question(at, "MFA question")
         assert not at.exception
 
     def test_snowflake_conn_failure_does_not_crash_agentic(self):
@@ -533,7 +564,8 @@ class TestSnowflakeFailureIsolation:
                                return_value=(False, "Snowflake logging failed")):
                         at.run(timeout=TIMEOUT)
                         at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
-                        at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
+                        at.text_area[0].set_value("MFA question").run(timeout=TIMEOUT)
+                        at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         assert not at.exception
 
     def test_snowflake_warning_shown_on_log_failure(self):
@@ -549,7 +581,7 @@ class TestSnowflakeFailureIsolation:
                                return_value=(False, "Snowflake logging failed: timeout")):
                         with patch("os.getenv", side_effect=_fake_getenv):
                             at.run(timeout=TIMEOUT)
-                            at.chat_input[0].set_value("MFA question").run(timeout=TIMEOUT)
+                            _submit_question(at, "MFA question")
         assert not at.exception
         # A Snowflake warning must be surfaced to the user
         assert len(at.warning) >= 1
@@ -565,7 +597,7 @@ class TestMissingCredentials:
                 None if k == "NVIDIA_API_KEY" else os.environ.get(k, *(a or ()))
             )):
                 at.run(timeout=TIMEOUT)
-                at.chat_input[0].set_value("question").run(timeout=TIMEOUT)
+                _submit_question(at, "question")
         assert not at.exception
         assert len(at.error) >= 1
 
@@ -577,6 +609,7 @@ class TestMissingCredentials:
             )):
                 at.run(timeout=TIMEOUT)
                 at.radio[0].set_value("Agentic Compliance Analysis").run(timeout=TIMEOUT)
-                at.chat_input[0].set_value("question").run(timeout=TIMEOUT)
+                at.text_area[0].set_value("question").run(timeout=TIMEOUT)
+                at.button(key="btn_analyse").click().run(timeout=TIMEOUT)
         assert not at.exception
         assert len(at.error) >= 1

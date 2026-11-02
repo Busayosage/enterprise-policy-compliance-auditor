@@ -935,6 +935,37 @@ class TestOperationalSafeguards:
                         get_agent_llm(state)
                     nvidia_spy.assert_not_called()  # ChatNVIDIA must never be constructed
 
+    def test_get_agent_llm_does_not_pass_timeout_in_request_body(self):
+        """timeout must not appear in ChatNVIDIA kwargs — it would be forwarded
+        into the NVIDIA request body and cause a 400 Unsupported parameter error."""
+        import os as _os
+        from unittest.mock import patch, MagicMock, call
+        from agent.llm import get_agent_llm
+
+        fake_llm = MagicMock()
+        nvidia_cls = MagicMock(return_value=fake_llm)
+
+        with patch("dotenv.load_dotenv"):
+            with patch("os.getenv", side_effect=lambda k, *a: "test-key" if k == "NVIDIA_API_KEY" else _os.environ.get(k, *(a or ()))):
+                with patch("langchain_nvidia_ai_endpoints.ChatNVIDIA", nvidia_cls):
+                    state = _state()
+                    result = get_agent_llm(state)
+
+        assert result is fake_llm
+        _, kwargs = nvidia_cls.call_args
+        pos_args = nvidia_cls.call_args.args[0] if nvidia_cls.call_args.args else {}
+        all_kwargs = {**pos_args, **kwargs}
+        assert "timeout" not in all_kwargs, (
+            "timeout must not be passed to ChatNVIDIA — NVIDIA rejects it with 400"
+        )
+        model_kw = all_kwargs.get("model_kwargs", {})
+        assert "timeout" not in model_kw, (
+            "timeout must not be in model_kwargs — NVIDIA rejects it with 400"
+        )
+        assert model_kw.get("chat_template_kwargs") == {"enable_thinking": False}, (
+            "enable_thinking=False must be preserved in model_kwargs"
+        )
+
     def test_retry_count_never_exceeds_max(self):
         """retry_count must be <= _MAX_RETRIES after any number of expand_retrieval calls."""
         from agent.graph import expand_retrieval
