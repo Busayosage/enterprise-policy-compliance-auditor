@@ -368,7 +368,8 @@ class TestAppHtmlHelpers:
             # after a partial exec up to the function definitions.
             # Simpler: parse the source and exec just the helper functions.
             import ast as _ast, html as _html_mod
-            src = open(r"C:\Users\Admin\enterprise-compliance-rag\app.py", encoding="utf-8").read()
+            app_path = str(__import__("pathlib").Path(__file__).resolve().parents[1] / "app.py")
+            src = open(app_path, encoding="utf-8").read()
             tree = _ast.parse(src)
             # Collect only FunctionDef nodes named _pill or _badge
             ns = {"_html": _html_mod}
