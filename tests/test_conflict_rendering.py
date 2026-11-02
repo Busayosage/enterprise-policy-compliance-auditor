@@ -259,3 +259,157 @@ class TestXssSafety:
         html = conflict_card_html(result, 1)
         assert "<b>" not in html
         assert "&lt;b&gt;" in html
+
+    def test_script_tag_in_page_number_is_escaped(self):
+        """Page values that contain HTML must be escaped in the card."""
+        parsed = {
+            "topic": "Approval Timing",
+            "policy_a": "policy_a.pdf",
+            "page_a": "<script>bad()</script>",
+            "excerpt_a": "Must be approved first.",
+            "policy_b": "policy_b.pdf",
+            "page_b": 3,
+            "excerpt_b": "Immediate approval allowed.",
+            "explanation": "Conflict.",
+            "review_flag": False,
+            "structured": True,
+        }
+        html = conflict_card_html(parsed, 1)
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+    def test_html_in_page_number_rendered_as_text(self):
+        """An HTML-bearing page value appears as literal text, not markup."""
+        parsed = {
+            "topic": "T",
+            "policy_a": "a.pdf",
+            "page_a": '<img src=x onerror=alert(1)>',
+            "excerpt_a": "Quote.",
+            "policy_b": "b.pdf",
+            "page_b": None,
+            "excerpt_b": None,
+            "explanation": "",
+            "review_flag": False,
+            "structured": True,
+        }
+        html = conflict_card_html(parsed, 1)
+        assert "<img" not in html
+        assert "&lt;img" in html
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# D. _pill / _badge filename escaping (app.py helpers)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestAppHtmlHelpers:
+    """Import _pill and _badge from app module via importlib to stay offline."""
+
+    @staticmethod
+    def _load_helpers():
+        import importlib
+        import sys
+        import types
+
+        # Stub every heavy dependency so app.py can be imported without
+        # Streamlit, dotenv, or the project's own modules.
+        stubs = [
+            "streamlit", "dotenv", "database", "main",
+            "snowflake_logger", "conflict_renderer",
+            "langchain_community", "langchain_community.document_loaders",
+            "chromadb", "openai",
+        ]
+        saved = {}
+        for name in stubs:
+            saved[name] = sys.modules.get(name)
+            if name not in sys.modules:
+                mod = types.ModuleType(name)
+                # Give streamlit the attributes app.py calls at module level
+                if name == "streamlit":
+                    for attr in (
+                        "set_page_config", "markdown", "sidebar", "session_state",
+                        "query_params", "stop", "container", "columns",
+                        "file_uploader", "button", "text_area", "metric",
+                        "info", "warning", "error", "success", "expander",
+                        "spinner", "write", "caption", "divider",
+                    ):
+                        setattr(mod, attr, lambda *a, **kw: None)
+                    mod.session_state = {}
+                    mod.query_params = {}
+                if name == "dotenv":
+                    mod.load_dotenv = lambda: None
+                if name == "database":
+                    for attr in (
+                        "CHROMA_DB_DIR", "_COLLECTION_NAME",
+                        "_detect_legacy_collection_name", "_is_legacy_index",
+                        "_pointer_file", "_read_pointer", "_slot_dir",
+                        "get_embeddings", "index_documents",
+                    ):
+                        setattr(mod, attr, None)
+                if name == "main":
+                    mod.ask_question = None
+                    mod.MODEL_NAME = "mock"
+                if name == "snowflake_logger":
+                    mod.create_logs_table_if_not_exists = lambda: (True, "")
+                    mod.is_snowflake_configured = lambda: False
+                    mod.log_query_to_snowflake = lambda *a, **kw: None
+                if name == "conflict_renderer":
+                    mod.parse_conflict_item = lambda x: x
+                    mod.conflict_card_html = lambda x, i: ""
+                sys.modules[name] = mod
+        try:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                "app_under_test",
+                r"C:\Users\Admin\enterprise-compliance-rag\app.py",
+            )
+            app_mod = importlib.util.module_from_spec(spec)
+            # Execute only the top-level function definitions, not st.* calls
+            # by wrapping problematic code — instead, just grab the two helpers
+            # after a partial exec up to the function definitions.
+            # Simpler: parse the source and exec just the helper functions.
+            import ast as _ast, html as _html_mod
+            src = open(r"C:\Users\Admin\enterprise-compliance-rag\app.py", encoding="utf-8").read()
+            tree = _ast.parse(src)
+            # Collect only FunctionDef nodes named _pill or _badge
+            ns = {"_html": _html_mod}
+            for node in tree.body:
+                if isinstance(node, _ast.FunctionDef) and node.name in ("_pill", "_badge"):
+                    exec(compile(_ast.Module(body=[node], type_ignores=[]), "<app>", "exec"), ns)
+            return ns["_pill"], ns["_badge"]
+        finally:
+            for name, orig in saved.items():
+                if orig is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = orig
+
+    def test_pill_escapes_script_tag_in_label(self):
+        _pill, _ = self._load_helpers()
+        html = _pill("<script>alert('xss')</script>", "info")
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+    def test_pill_escapes_html_in_filename(self):
+        _pill, _ = self._load_helpers()
+        html = _pill('📄 <img src=x onerror=alert(1)>.pdf', "info")
+        assert "<img" not in html
+        assert "&lt;img" in html
+
+    def test_badge_escapes_script_tag_in_label(self):
+        _, _badge = self._load_helpers()
+        html = _badge("<b>bold</b>", "info")
+        assert "<b>" not in html
+        assert "&lt;b&gt;" in html
+
+    def test_pill_normal_filename_renders_correctly(self):
+        """A safe filename passes through and is visible in the output."""
+        _pill, _ = self._load_helpers()
+        html = _pill("📄 policy_handbook_v2.pdf", "info")
+        assert "policy_handbook_v2.pdf" in html
+        assert 'class="pill' in html
+
+    def test_badge_normal_label_renders_correctly(self):
+        _, _badge = self._load_helpers()
+        html = _badge("Compliant", "success")
+        assert "Compliant" in html
+        assert 'class="badge' in html

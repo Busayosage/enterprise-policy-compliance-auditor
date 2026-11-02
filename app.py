@@ -466,7 +466,7 @@ if st.session_state["nav_page"] == "documents":
                 rows_html = "".join(
                     f'<div class="doc-row">'
                     f'<span>📄</span>'
-                    f'<span class="doc-name">{f.name}</span>'
+                    f'<span class="doc-name">{_html.escape(f.name)}</span>'
                     f'</div>'
                     for f in uploaded_files
                 )
