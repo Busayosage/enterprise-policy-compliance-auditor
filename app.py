@@ -5,6 +5,7 @@ Only the presentation layer has been redesigned.
 """
 
 import gc
+import html as _html
 import json
 import os
 import time
@@ -323,11 +324,11 @@ def _get_indexed_docs() -> list[dict]:
 
 
 def _badge(label: str, level: str) -> str:
-    return f'<span class="badge badge-{level}">{label}</span>'
+    return f'<span class="badge badge-{_html.escape(level)}">{_html.escape(label)}</span>'
 
 
 def _pill(label: str, level: str = "info") -> str:
-    return f'<span class="pill pill-{level}">{label}</span>'
+    return f'<span class="pill pill-{_html.escape(level)}">{_html.escape(label)}</span>'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -525,8 +526,8 @@ if st.session_state["nav_page"] == "documents":
                 rows_html = "".join(
                     f'<div class="doc-row">'
                     f'<span>📄</span>'
-                    f'<span class="doc-name">{d["filename"]}</span>'
-                    f'<span class="doc-meta">{d["chunks"]} chunks</span>'
+                    f'<span class="doc-name">{_html.escape(d["filename"])}</span>'
+                    f'<span class="doc-meta">{int(d["chunks"])} chunks</span>'
                     f'</div>'
                     for d in indexed_docs
                 )

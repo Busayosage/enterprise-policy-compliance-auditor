@@ -188,7 +188,7 @@ def _two_col_html(
     policy_b: str, page_b, excerpt_b: str,
 ) -> str:
     def _policy_box(label: str, name: str, page, excerpt: str) -> str:
-        page_str = f" — Page {page}" if page is not None else ""
+        page_str = f" — Page {html_module.escape(str(page))}" if page is not None else ""
         name_html = (
             f'<div class="conflict-policy-name">📄 {name}{page_str}</div>'
             if name
