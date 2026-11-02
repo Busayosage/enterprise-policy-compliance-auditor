@@ -120,7 +120,7 @@ class ConflictAnalysis(BaseModel):
 # Agent-specific LLM configuration and context helpers
 # ---------------------------------------------------------------------------
 
-_AGENT_MODEL = "meta/llama-3.1-70b-instruct"
+_AGENT_MODEL = "nvidia/nemotron-3.5-super-vl-120b-a12b"
 _AGENT_MAX_TOKENS = 500
 _MAX_CONTEXT_CHARS = 8000
 
@@ -269,5 +269,5 @@ def get_agent_llm(state: dict):
         nvidia_api_key=api_key,
         temperature=0,
         max_tokens=_AGENT_MAX_TOKENS,
-        timeout=30,
+        model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
     )

@@ -7,7 +7,7 @@ from database import load_retriever
 
 load_dotenv()
 
-MODEL_NAME = "meta/llama-3.1-70b-instruct"
+MODEL_NAME = "nvidia/nemotron-3.5-super-vl-120b-a12b"
 TOP_K_CHUNKS = 3      # k=3 achieves 100% evidence-clause coverage (Phase 3)
 # Bounded whole-chunk context: never cut a chunk mid-sentence.
 # Each chunk is at most ~1200 chars; 3 chunks ≈ 4000 chars.
@@ -26,7 +26,7 @@ def get_llm():
         nvidia_api_key=api_key,
         temperature=0,
         max_tokens=350,
-        timeout=30,
+        model_kwargs={"chat_template_kwargs": {"enable_thinking": False}},
     )
 
 

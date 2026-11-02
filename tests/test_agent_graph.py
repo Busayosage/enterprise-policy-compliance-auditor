@@ -25,7 +25,7 @@ Test coverage:
 """
 
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from langchain_core.documents import Document
 
 from agent.state import make_initial_state, AgentState
@@ -194,19 +194,72 @@ def test_total_retrieval_calls_capped_at_three(compiled_graph):
 # ---------------------------------------------------------------------------
 
 def test_cross_doc_query_runs_conflict_check(compiled_graph):
+    """Cross-doc query routes through conflict check and detects a genuine conflict.
+
+    The LLM is mocked so this test is fully offline — no live NVIDIA calls.
+    Uses truly contradictory policy text so the mock's result is semantically
+    correct (IT Security Policy requires sign-off; Fast-Track Policy removes it).
+    """
+    from agent.llm import ClassificationOutput, EvidenceEvaluation, ConflictAnalysis
+
+    def _make_structured(cls):
+        m = MagicMock()
+        if cls is ConflictAnalysis:
+            m.invoke.return_value = ConflictAnalysis(
+                has_genuine_conflict=True,
+                conflict_descriptions=[
+                    "IT Security Policy requires IT Security sign-off before software "
+                    "installation, while the Fast-Track Approval Policy states Finance "
+                    "approval alone is sufficient with no IT Security review required."
+                ],
+                supporting_passages=[],
+                review_recommended=True,
+            )
+        elif cls is ClassificationOutput:
+            m.invoke.return_value = ClassificationOutput(
+                category="cross_document",
+                intent="compare software approval requirements across policies",
+                requires_cross_doc=True,
+                needs_clarification=False,
+                answerability="answerable",
+            )
+        elif cls is EvidenceEvaluation:
+            m.invoke.return_value = EvidenceEvaluation(
+                status="CONFLICTING",
+                reasoning="Two policies make contradictory statements about the same rule.",
+                supporting_passages=[],
+                coverage_estimate=0.8,
+            )
+        else:
+            m.invoke.return_value = MagicMock()
+        return m
+
+    mock_llm = MagicMock()
+    mock_llm.with_structured_output.side_effect = _make_structured
+    mock_llm.invoke.return_value = MagicMock(
+        content="These policies directly contradict each other on software approval requirements."
+    )
+
     docs = [
-        _make_doc("IT policy: passwords expire after 90 days.", "it_security_policy.pdf"),
-        _make_doc("HR policy: annual leave entitlement is 25 days.", "hr_leave_policy.pdf"),
+        _make_doc(
+            "All software must be approved by the IT Security team before installation.",
+            "it_security_policy.pdf",
+        ),
+        _make_doc(
+            "Finance approval alone is sufficient; no IT Security sign-off is required.",
+            "software_fast_track_policy.pdf",
+        ),
     ]
     initial = make_initial_state(
-        "Compare the IT and HR policies on access controls and leave entitlement.",
+        "Compare software approval requirements across policies.",
         retriever=_stub_retriever(docs),
+        llm_override=mock_llm,
     )
     result = compiled_graph.invoke(initial)
 
-    # Cross-doc path was taken → conflicts list populated (even if empty)
+    # Cross-doc path was taken → conflict detection ran
     assert isinstance(result["conflicts"], list)
-    # With two different source files, a conflict note should be present
+    # Mocked LLM detected a genuine conflict → at least one conflict description
     assert len(result["conflicts"]) >= 1
 
 
@@ -526,11 +579,21 @@ class TestCheckCrossDocConflicts:
         assert result["conflicts"] == []
 
     def test_multi_source_flags_conflict_note(self):
+        from agent.llm import ConflictAnalysis
         docs = [
             _make_doc("IT policy text.", "it_security_policy.pdf"),
             _make_doc("HR policy text.", "hr_leave_policy.pdf"),
         ]
-        state = _minimal_state(retrieved_docs=docs)
+        mock_llm = MagicMock()
+        structured = MagicMock()
+        structured.invoke.return_value = ConflictAnalysis(
+            has_genuine_conflict=True,
+            conflict_descriptions=["IT Security Policy conflicts with HR Leave Policy."],
+            supporting_passages=[],
+            review_recommended=True,
+        )
+        mock_llm.with_structured_output.return_value = structured
+        state = _minimal_state(retrieved_docs=docs, llm_override=mock_llm)
         result = check_cross_doc_conflicts(state)
         assert len(result["conflicts"]) >= 1
 
